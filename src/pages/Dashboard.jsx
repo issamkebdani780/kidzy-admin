@@ -6,7 +6,7 @@ import {
   Activity, 
   CheckCircle, 
   Mail, 
-  ArrowLeft, 
+  ArrowRight, 
   Loader, 
   Calendar,
   Sparkles
@@ -31,14 +31,12 @@ const Dashboard = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        // Fetch orders and messages
-        const ordersRes = await getOrders(1, 100); // Fetch first 100 orders to get accurate statistics
+        const ordersRes = await getOrders(1, 100);
         const messagesRes = await getMessages();
 
         const orders = ordersRes.orders || [];
         const totalOrders = ordersRes.total || orders.length;
 
-        // Calculate statistics
         let pending = 0;
         let processing = 0;
         let delivered = 0;
@@ -65,14 +63,11 @@ const Dashboard = () => {
           totalMessages: messagesRes.contacts ? messagesRes.contacts.length : 0
         });
 
-        // Get recent 5 orders
         setRecentOrders(orders.slice(0, 5));
-
-        // Sort stories by count
         setStoryBreakdown(stories);
       } catch (err) {
         console.error('Dashboard loading error:', err);
-        setError('تعذر تحميل بيانات الإحصائيات. يرجى التحقق من اتصال السيرفر.');
+        setError('Failed to load dashboard statistics. Please check the server connection.');
       } finally {
         setLoading(false);
       }
@@ -86,7 +81,7 @@ const Dashboard = () => {
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="flex flex-col items-center gap-4">
           <Loader className="w-10 h-10 text-primary-500 animate-spin" />
-          <p className="text-slate-400 font-bold">جاري تحميل بيانات لوحة التحكم...</p>
+          <p className="text-slate-400 font-bold">Loading dashboard statistics...</p>
         </div>
       </div>
     );
@@ -95,24 +90,24 @@ const Dashboard = () => {
   // Story translation helper
   const translateStory = (story) => {
     const storiesMapping = {
-      'doctor': 'الطبيب الصغير 🩺',
-      'astronaut': 'رائد الفضاء 🚀',
-      'engineer': 'المهندس المبدع 🏗️',
-      'teacher': 'المعلم القدوة 🍎',
-      'chef': 'الطاهي المتميز 🍳',
-      'pilot': 'الطيار الشجاع ✈️',
-      'artist': 'الفنان الموهوب 🎨',
-      'writer': 'الكاتب الصغير 📝'
+      'doctor': 'Little Doctor 🩺',
+      'astronaut': 'Space Astronaut 🚀',
+      'engineer': 'Creative Engineer 🏗️',
+      'teacher': 'Role Model Teacher 🍎',
+      'chef': 'Master Chef 🍳',
+      'pilot': 'Brave Pilot ✈️',
+      'artist': 'Talented Artist 🎨',
+      'writer': 'Little Writer 📝'
     };
     return storiesMapping[story] || story;
   };
 
   const statusBadges = {
-    pending: { label: 'قيد المراجعة', class: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20' },
-    processing: { label: 'قيد التنفيذ', class: 'bg-blue-500/10 text-blue-400 border-blue-500/20' },
-    shipped: { label: 'تم الشحن', class: 'bg-purple-500/10 text-purple-400 border-purple-500/20' },
-    delivered: { label: 'تم التوصيل', class: 'bg-green-500/10 text-green-400 border-green-500/20' },
-    cancelled: { label: 'ملغي', class: 'bg-red-500/10 text-red-400 border-red-500/20' },
+    pending: { label: 'Pending', class: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20' },
+    processing: { label: 'Processing', class: 'bg-blue-500/10 text-blue-400 border-blue-500/20' },
+    shipped: { label: 'Shipped', class: 'bg-purple-500/10 text-purple-400 border-purple-500/20' },
+    delivered: { label: 'Delivered', class: 'bg-green-500/10 text-green-400 border-green-500/20' },
+    cancelled: { label: 'Cancelled', class: 'bg-red-500/10 text-red-400 border-red-500/20' },
   };
 
   return (
@@ -121,14 +116,14 @@ const Dashboard = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-black text-white flex items-center gap-3">
-            <span>مرحباً بك في لوحة الإدارة</span>
+            <span>Welcome to Kidzy Dashboard</span>
             <Sparkles className="w-7 h-7 text-accent animate-bounce" />
           </h1>
-          <p className="text-slate-400 mt-1 font-medium">نظرة عامة على أداء متجر كيدزي للكتب المخصصة</p>
+          <p className="text-slate-400 mt-1 font-medium">Overview of your personalized children books store performance</p>
         </div>
         <div className="text-sm font-bold bg-slate-900 border border-slate-800 rounded-2xl px-4 py-3 flex items-center gap-2 self-start md:self-auto">
           <Calendar className="w-5 h-5 text-primary-400" />
-          <span>{new Date().toLocaleDateString('ar-DZ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
+          <span>{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
         </div>
       </div>
 
@@ -141,13 +136,13 @@ const Dashboard = () => {
       {/* KPI Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
         {[
-          { label: 'إجمالي الطلبات', value: stats.totalOrders, icon: ShoppingBag, color: 'text-primary-400 bg-primary-500/10 border-primary-500/10' },
-          { label: 'بانتظار المراجعة', value: stats.pendingOrders, icon: Clock, color: 'text-yellow-400 bg-yellow-500/10 border-yellow-500/10' },
-          { label: 'قيد التنفيذ / الشحن', value: stats.processingOrders, icon: Activity, color: 'text-blue-400 bg-blue-500/10 border-blue-500/10' },
-          { label: 'طلبات مكتملة', value: stats.deliveredOrders, icon: CheckCircle, color: 'text-green-400 bg-green-500/10 border-green-500/10' },
-          { label: 'رسائل التواصل', value: stats.totalMessages, icon: Mail, color: 'text-purple-400 bg-purple-500/10 border-purple-500/10' },
+          { label: 'Total Orders', value: stats.totalOrders, icon: ShoppingBag, color: 'text-primary-400 bg-primary-500/10 border-primary-500/10' },
+          { label: 'Pending Review', value: stats.pendingOrders, icon: Clock, color: 'text-yellow-400 bg-yellow-500/10 border-yellow-500/10' },
+          { label: 'In Progress / Shipped', value: stats.processingOrders, icon: Activity, color: 'text-blue-400 bg-blue-500/10 border-blue-500/10' },
+          { label: 'Delivered', value: stats.deliveredOrders, icon: CheckCircle, color: 'text-green-400 bg-green-500/10 border-green-500/10' },
+          { label: 'Support Messages', value: stats.totalMessages, icon: Mail, color: 'text-purple-400 bg-purple-500/10 border-purple-500/10' },
         ].map((card, idx) => (
-          <div key={idx} className={`p-6 bg-slate-900 rounded-[2rem] border border-slate-800 flex items-center justify-between shadow-xl`}>
+          <div key={idx} className="p-6 bg-slate-900 rounded-[2rem] border border-slate-800 flex items-center justify-between shadow-xl">
             <div>
               <p className="text-slate-400 font-bold text-sm">{card.label}</p>
               <h3 className="text-3xl font-black text-white mt-2">{card.value}</h3>
@@ -165,10 +160,10 @@ const Dashboard = () => {
         {/* Column 1 & 2: Recent Orders Table */}
         <div className="lg:col-span-2 bg-slate-900 rounded-[2.5rem] border border-slate-800 p-6 md:p-8 flex flex-col shadow-xl">
           <div className="flex items-center justify-between mb-6 border-b border-slate-800 pb-4">
-            <h2 className="text-xl font-extrabold text-white">آخر الطلبات المستلمة</h2>
+            <h2 className="text-xl font-extrabold text-white">Recent Orders</h2>
             <Link to="/orders" className="text-primary-400 hover:text-primary-350 text-sm font-bold flex items-center gap-1">
-              <span>عرض جميع الطلبات</span>
-              <ArrowLeft className="w-4 h-4" />
+              <span>View all orders</span>
+              <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
 
@@ -176,17 +171,17 @@ const Dashboard = () => {
             {recentOrders.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-slate-500 font-bold">
                 <ShoppingBag className="w-12 h-12 text-slate-700 mb-3" />
-                <p>لا توجد طلبات مسجلة حالياً</p>
+                <p>No orders recorded yet</p>
               </div>
             ) : (
-              <table className="w-full text-right text-sm">
+              <table className="w-full text-left text-sm">
                 <thead>
                   <tr className="text-slate-400 border-b border-slate-800 font-bold">
-                    <th className="py-3 px-2">الرقم</th>
-                    <th className="py-3 px-4">اسم الطفل</th>
-                    <th className="py-3 px-4">رقم الهاتف</th>
-                    <th className="py-3 px-4">نوع القصة</th>
-                    <th className="py-3 px-4">حالة الطلب</th>
+                    <th className="py-3 px-2">ID</th>
+                    <th className="py-3 px-4">Kid Name</th>
+                    <th className="py-3 px-4">Phone Number</th>
+                    <th className="py-3 px-4">Story Type</th>
+                    <th className="py-3 px-4">Status</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800/50">
@@ -211,17 +206,17 @@ const Dashboard = () => {
 
         {/* Column 3: Story Type Popularity Breakdown */}
         <div className="bg-slate-900 rounded-[2.5rem] border border-slate-800 p-6 md:p-8 flex flex-col shadow-xl">
-          <h2 className="text-xl font-extrabold text-white mb-6 border-b border-slate-800 pb-4">شعبية أنواع القصص</h2>
+          <h2 className="text-xl font-extrabold text-white mb-6 border-b border-slate-800 pb-4">Story Types Popularity</h2>
           
           <div className="flex-1 space-y-6">
             {Object.keys(storyBreakdown).length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-slate-500 font-bold">
                 <Sparkles className="w-12 h-12 text-slate-700 mb-3" />
-                <p>لا توجد إحصائيات للقصص حالياً</p>
+                <p>No story statistics yet</p>
               </div>
             ) : (
               Object.entries(storyBreakdown)
-                .sort((a, b) => b[1] - a[1]) // Sort by popular count desc
+                .sort((a, b) => b[1] - a[1])
                 .map(([story, count]) => {
                   const percentage = stats.totalOrders > 0 
                     ? Math.round((count / stats.totalOrders) * 100) 
@@ -232,7 +227,7 @@ const Dashboard = () => {
                       <div className="flex justify-between items-center text-sm">
                         <span className="font-bold text-slate-200">{translateStory(story)}</span>
                         <div className="flex items-center gap-2">
-                          <span className="text-slate-400 text-xs">({count} طلب)</span>
+                          <span className="text-slate-400 text-xs">({count} orders)</span>
                           <span className="font-bold text-primary-400">{percentage}%</span>
                         </div>
                       </div>

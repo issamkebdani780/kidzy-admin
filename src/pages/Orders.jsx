@@ -3,14 +3,12 @@ import {
   Search, 
   Eye, 
   Trash2, 
-  ExternalLink, 
   Phone, 
   MessageSquare, 
   Loader, 
   ChevronRight, 
   ChevronLeft,
   X,
-  CheckCircle2,
   Calendar,
   Sparkles
 } from 'lucide-react';
@@ -49,7 +47,7 @@ const Orders = () => {
       }
     } catch (err) {
       console.error('Fetch orders error:', err);
-      setError('حدث خطأ أثناء تحميل الطلبات. يرجى المحاولة مرة أخرى.');
+      setError('An error occurred while loading orders. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -65,15 +63,13 @@ const Orders = () => {
       setUpdatingId(id);
       const res = await updateOrderStatus(id, newStatus);
       if (res.success) {
-        // Update local list
         setOrders(prev => prev.map(o => o.id === id ? { ...o, status: newStatus } : o));
-        // Update selected order view if open
         if (selectedOrder && selectedOrder.id === id) {
           setSelectedOrder(prev => ({ ...prev, status: newStatus }));
         }
       }
     } catch (err) {
-      alert(err.message || 'فشل تحديث حالة الطلب');
+      alert(err.message || 'Failed to update order status');
     } finally {
       setUpdatingId(null);
     }
@@ -88,8 +84,7 @@ const Orders = () => {
       if (res.success) {
         setDeleteConfirmOpen(false);
         setDeleteId(null);
-        setSelectedOrder(null); // Close detail view if open
-        // Refresh page or go back a page if this was the last item on the page
+        setSelectedOrder(null);
         if (orders.length === 1 && page > 1) {
           setPage(p => p - 1);
         } else {
@@ -97,17 +92,14 @@ const Orders = () => {
         }
       }
     } catch (err) {
-      alert(err.message || 'فشل حذف الطلب');
+      alert(err.message || 'Failed to delete order');
       setLoading(false);
     }
   };
 
   // Format WhatsApp Link
   const formatWhatsAppLink = (phone, kidName, storyType) => {
-    // Sanitize phone number (strip symbols, leading zeros, etc.)
     let cleanPhone = phone.replace(/[^\d]/g, '');
-    
-    // Check if the phone starts with local format 05, 06, 07 (Algeria) and needs international code
     if (cleanPhone.startsWith('0')) {
       cleanPhone = '213' + cleanPhone.substring(1);
     } else if (!cleanPhone.startsWith('213') && cleanPhone.length === 9) {
@@ -123,25 +115,25 @@ const Orders = () => {
   // Story translation helper
   const translateStory = (story) => {
     const storiesMapping = {
-      'doctor': 'الطبيب الصغير 🩺',
-      'astronaut': 'رائد الفضاء 🚀',
-      'engineer': 'المهندس المبدع 🏗️',
-      'teacher': 'المعلم القدوة 🍎',
-      'chef': 'الطاهي المتميز 🍳',
-      'pilot': 'الطيار الشجاع ✈️',
-      'artist': 'الفنان الموهوب 🎨',
-      'writer': 'الكاتب الصغير 📝'
+      'doctor': 'Little Doctor 🩺',
+      'astronaut': 'Space Astronaut 🚀',
+      'engineer': 'Creative Engineer 🏗️',
+      'teacher': 'Role Model Teacher 🍎',
+      'chef': 'Master Chef 🍳',
+      'pilot': 'Brave Pilot ✈️',
+      'artist': 'Talented Artist 🎨',
+      'writer': 'Little Writer 📝'
     };
     return storiesMapping[story] || story;
   };
 
   // Status badges definitions
   const statusBadges = {
-    pending: { label: 'قيد المراجعة', class: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/25' },
-    processing: { label: 'قيد التنفيذ', class: 'bg-blue-500/10 text-blue-400 border-blue-500/25' },
-    shipped: { label: 'تم الشحن', class: 'bg-purple-500/10 text-purple-400 border-purple-500/25' },
-    delivered: { label: 'تم التوصيل', class: 'bg-green-500/10 text-green-400 border-green-500/25' },
-    cancelled: { label: 'ملغي', class: 'bg-red-500/10 text-red-400 border-red-500/25' },
+    pending: { label: 'Pending', class: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/25' },
+    processing: { label: 'Processing', class: 'bg-blue-500/10 text-blue-400 border-blue-500/25' },
+    shipped: { label: 'Shipped', class: 'bg-purple-500/10 text-purple-400 border-purple-500/25' },
+    delivered: { label: 'Delivered', class: 'bg-green-500/10 text-green-400 border-green-500/25' },
+    cancelled: { label: 'Cancelled', class: 'bg-red-500/10 text-red-400 border-red-500/25' },
   };
 
   // Filter & Search computation
@@ -163,11 +155,11 @@ const Orders = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black text-white">إدارة الطلبات</h1>
-          <p className="text-slate-400 mt-1 font-medium">متابعة ومعالجة طلبات كتب كيدزي المخصصة</p>
+          <h1 className="text-3xl font-black text-white">Orders Management</h1>
+          <p className="text-slate-400 mt-1 font-medium">Track and process personalized Kidzy children book orders</p>
         </div>
         <div className="bg-slate-900 border border-slate-800 text-slate-300 font-bold px-4 py-3 rounded-2xl text-sm shrink-0 self-start sm:self-auto">
-          إجمالي الطلبات المستلمة: {totalOrders}
+          Total Orders: {totalOrders}
         </div>
       </div>
 
@@ -182,12 +174,12 @@ const Orders = () => {
         {/* Status Tabs */}
         <div className="flex flex-wrap gap-2 overflow-x-auto">
           {[
-            { value: 'all', label: 'الكل' },
-            { value: 'pending', label: 'قيد المراجعة' },
-            { value: 'processing', label: 'قيد التنفيذ' },
-            { value: 'shipped', label: 'تم الشحن' },
-            { value: 'delivered', label: 'تم التوصيل' },
-            { value: 'cancelled', label: 'الملغاة' },
+            { value: 'all', label: 'All' },
+            { value: 'pending', label: 'Pending' },
+            { value: 'processing', label: 'Processing' },
+            { value: 'shipped', label: 'Shipped' },
+            { value: 'delivered', label: 'Delivered' },
+            { value: 'cancelled', label: 'Cancelled' },
           ].map(tab => (
             <button
               key={tab.value}
@@ -205,13 +197,13 @@ const Orders = () => {
 
         {/* Search Input */}
         <div className="relative w-full lg:w-80">
-          <Search className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
           <input
             type="text"
-            placeholder="البحث باسم الطفل، الهاتف، الرقم..."
+            placeholder="Search by kid name, phone, number..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-slate-950/40 border border-slate-850 rounded-xl pr-11 pl-4 py-3.5 outline-none focus:border-primary-500 text-sm font-medium text-slate-200"
+            className="w-full bg-slate-950/40 border border-slate-850 rounded-xl pl-11 pr-4 py-3.5 outline-none focus:border-primary-500 text-sm font-medium text-slate-200"
           />
         </div>
       </div>
@@ -221,25 +213,25 @@ const Orders = () => {
         {loading ? (
           <div className="flex flex-col items-center justify-center py-24 gap-4">
             <Loader className="w-10 h-10 text-primary-500 animate-spin" />
-            <p className="text-slate-500 font-bold">جاري تحميل الطلبات...</p>
+            <p className="text-slate-500 font-bold">Loading orders...</p>
           </div>
         ) : filteredOrders.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-slate-500 gap-3">
             <Sparkles className="w-12 h-12 text-slate-800" />
-            <p className="font-extrabold text-lg text-slate-400">لا توجد طلبات تطابق هذا البحث أو الفلتر</p>
+            <p className="font-extrabold text-lg text-slate-400">No orders match this search or filter</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-right text-sm">
+            <table className="w-full text-left text-sm">
               <thead>
                 <tr className="text-slate-400 border-b border-slate-800/80 font-bold bg-slate-850/30">
-                  <th className="py-4 px-6">رقم الطلب</th>
-                  <th className="py-4 px-6">تاريخ الطلب</th>
-                  <th className="py-4 px-6">اسم الطفل</th>
-                  <th className="py-4 px-6">رقم الهاتف</th>
-                  <th className="py-4 px-6">نوع القصة</th>
-                  <th className="py-4 px-6">حالة الطلب</th>
-                  <th className="py-4 px-6 text-left">خيارات</th>
+                  <th className="py-4 px-6">ID</th>
+                  <th className="py-4 px-6">Date</th>
+                  <th className="py-4 px-6">Kid Name</th>
+                  <th className="py-4 px-6">Phone Number</th>
+                  <th className="py-4 px-6">Story Type</th>
+                  <th className="py-4 px-6">Status</th>
+                  <th className="py-4 px-6 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/50">
@@ -249,7 +241,7 @@ const Orders = () => {
                     <td className="py-4 px-6 text-slate-400">
                       <span className="flex items-center gap-1.5">
                         <Calendar className="w-4 h-4 text-slate-500" />
-                        {new Date(order.created_at).toLocaleDateString('ar-DZ', { day: '2-digit', month: '2-digit', year: '2-digit' })}
+                        {new Date(order.created_at).toLocaleDateString('en-US', { day: '2-digit', month: '2-digit', year: '2-digit' })}
                       </span>
                     </td>
                     <td className="py-4 px-6 font-bold text-white text-base">{order.kid_name}</td>
@@ -264,19 +256,19 @@ const Orders = () => {
                           statusBadges[order.status]?.class
                         }`}
                       >
-                        <option value="pending">⏳ قيد المراجعة</option>
-                        <option value="processing">⚙️ قيد التنفيذ</option>
-                        <option value="shipped">📦 تم الشحن</option>
-                        <option value="delivered">✅ تم التوصيل</option>
-                        <option value="cancelled">❌ ملغي</option>
+                        <option value="pending">⏳ Pending</option>
+                        <option value="processing">⚙️ Processing</option>
+                        <option value="shipped">📦 Shipped</option>
+                        <option value="delivered">✅ Delivered</option>
+                        <option value="cancelled">❌ Cancelled</option>
                       </select>
                     </td>
-                    <td className="py-4 px-6 text-left">
-                      <div className="flex items-center justify-start gap-2">
+                    <td className="py-4 px-6 text-right">
+                      <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => setSelectedOrder(order)}
                           className="p-2 bg-slate-800 hover:bg-primary-600 hover:text-white text-primary-400 rounded-xl transition-colors cursor-pointer"
-                          title="عرض تفاصيل الطلب"
+                          title="View Details"
                         >
                           <Eye className="w-4 h-4" />
                         </button>
@@ -285,14 +277,14 @@ const Orders = () => {
                           target="_blank"
                           rel="noreferrer"
                           className="p-2 bg-slate-800 hover:bg-green-600 hover:text-white text-green-400 rounded-xl transition-colors cursor-pointer"
-                          title="مراسلة عبر واتساب"
+                          title="WhatsApp Chat"
                         >
                           <MessageSquare className="w-4 h-4" />
                         </a>
                         <button
                           onClick={() => { setDeleteId(order.id); setDeleteConfirmOpen(true); }}
                           className="p-2 bg-slate-800 hover:bg-red-600 hover:text-white text-red-400 rounded-xl transition-colors cursor-pointer"
-                          title="حذف الطلب"
+                          title="Delete Order"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -305,31 +297,31 @@ const Orders = () => {
           </div>
         )}
 
-        {/* Pagination Bar */}
+        {/* Pagination */}
         {!loading && totalPages > 1 && (
           <div className="flex items-center justify-between px-6 py-4 bg-slate-850/20 border-t border-slate-800 text-slate-400">
-            <span className="text-xs font-bold">الصفحة {page} من {totalPages}</span>
+            <span className="text-xs font-bold">Page {page} of {totalPages}</span>
             <div className="flex items-center gap-2">
               <button
                 disabled={page === 1}
                 onClick={() => setPage(p => Math.max(1, p - 1))}
                 className="p-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
               >
-                <ChevronRight className="w-5 h-5" />
+                <ChevronLeft className="w-5 h-5" />
               </button>
               <button
                 disabled={page === totalPages}
                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                 className="p-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
               >
-                <ChevronLeft className="w-5 h-5" />
+                <ChevronRight className="w-5 h-5" />
               </button>
             </div>
           </div>
         )}
       </div>
 
-      {/* Details Modal Drawer */}
+      {/* Details Modal */}
       {selectedOrder && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setSelectedOrder(null)}></div>
@@ -337,14 +329,14 @@ const Orders = () => {
           <div className="bg-slate-900 border border-slate-800 w-full max-w-2xl rounded-[2.5rem] p-6 md:p-8 z-10 relative shadow-2xl flex flex-col md:flex-row gap-6 max-h-[90vh] overflow-y-auto">
             <button
               onClick={() => setSelectedOrder(null)}
-              className="absolute top-4 left-4 p-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl cursor-pointer"
+              className="absolute top-4 right-4 p-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
 
-            {/* Left/Top: Image Preview */}
-            <div className="w-full md:w-1/2 flex flex-col items-center">
-              <h3 className="text-slate-400 text-xs font-bold mb-3 self-start">صورة الطفل</h3>
+            {/* Image Preview */}
+            <div className="w-full md:w-1/2 flex flex-col items-start">
+              <h3 className="text-slate-400 text-xs font-bold mb-3">Child Photo</h3>
               <div 
                 className="w-full aspect-[4/3] md:aspect-square bg-slate-950 rounded-2xl overflow-hidden border border-slate-800 relative group cursor-pointer"
                 onClick={() => setZoomImage(true)}
@@ -355,33 +347,33 @@ const Orders = () => {
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-white text-xs font-bold">
-                  انقر للتكبير
+                  Click to Zoom
                 </div>
               </div>
             </div>
 
-            {/* Right/Bottom: Meta Information */}
+            {/* Information details */}
             <div className="w-full md:w-1/2 flex flex-col justify-between">
               <div>
                 <span className="text-xs font-bold px-3 py-1 bg-slate-800 text-slate-300 rounded-full">
-                  طلب #{selectedOrder.id}
+                  Order #{selectedOrder.id}
                 </span>
                 
                 <h2 className="text-2xl font-black text-white mt-4">{selectedOrder.kid_name}</h2>
                 
                 <div className="mt-6 space-y-4 font-medium text-sm text-slate-300">
                   <div className="flex items-center gap-3">
-                    <span className="text-slate-500 shrink-0">نوع القصة:</span>
+                    <span className="text-slate-500 shrink-0">Story Type:</span>
                     <span className="text-white font-bold">{translateStory(selectedOrder.story_type)}</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-slate-500 shrink-0">رقم الهاتف:</span>
-                    <span className="text-white dir-ltr">{selectedOrder.phone}</span>
+                    <span className="text-slate-500 shrink-0">Phone:</span>
+                    <span className="text-white">{selectedOrder.phone}</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <span className="text-slate-500 shrink-0">تاريخ الطلب:</span>
+                    <span className="text-slate-500 shrink-0">Order Date:</span>
                     <span className="text-white">
-                      {new Date(selectedOrder.created_at).toLocaleString('ar-DZ', { 
+                      {new Date(selectedOrder.created_at).toLocaleString('en-US', { 
                         day: 'numeric', 
                         month: 'long', 
                         year: 'numeric',
@@ -394,7 +386,7 @@ const Orders = () => {
 
                 {/* Status selector */}
                 <div className="mt-6 space-y-2">
-                  <label className="block text-xs font-bold text-slate-500">حالة الطلب الحالية</label>
+                  <label className="block text-xs font-bold text-slate-500">Current Order Status</label>
                   <select
                     value={selectedOrder.status}
                     onChange={(e) => handleStatusChange(selectedOrder.id, e.target.value)}
@@ -402,11 +394,11 @@ const Orders = () => {
                       statusBadges[selectedOrder.status]?.class
                     }`}
                   >
-                    <option value="pending">⏳ قيد المراجعة</option>
-                    <option value="processing">⚙️ قيد التنفيذ</option>
-                    <option value="shipped">📦 تم الشحن</option>
-                    <option value="delivered">✅ تم التوصيل</option>
-                    <option value="cancelled">❌ ملغي</option>
+                    <option value="pending">⏳ Pending</option>
+                    <option value="processing">⚙️ Processing</option>
+                    <option value="shipped">📦 Shipped</option>
+                    <option value="delivered">✅ Delivered</option>
+                    <option value="cancelled">❌ Cancelled</option>
                   </select>
                 </div>
               </div>
@@ -420,12 +412,12 @@ const Orders = () => {
                   className="flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 rounded-2xl shadow-lg transition-colors cursor-pointer text-sm"
                 >
                   <MessageSquare className="w-4 h-4" />
-                  <span>تواصل عبر واتساب</span>
+                  <span>WhatsApp Chat</span>
                 </a>
                 <button
                   onClick={() => { setDeleteId(selectedOrder.id); setDeleteConfirmOpen(true); }}
                   className="p-3.5 bg-red-500/10 hover:bg-red-600 text-red-400 hover:text-white rounded-2xl transition-colors cursor-pointer"
-                  title="حذف الطلب نهائياً"
+                  title="Delete Order Permanently"
                 >
                   <Trash2 className="w-5 h-5" />
                 </button>
@@ -436,11 +428,11 @@ const Orders = () => {
         </div>
       )}
 
-      {/* Image Zoom Modal */}
+      {/* Image Zoom */}
       {zoomImage && selectedOrder && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90" onClick={() => setZoomImage(false)}>
           <button 
-            className="absolute top-4 left-4 p-3 bg-slate-900 hover:bg-slate-800 text-white rounded-full cursor-pointer"
+            className="absolute top-4 right-4 p-3 bg-slate-900 hover:bg-slate-800 text-white rounded-full cursor-pointer"
             onClick={() => setZoomImage(false)}
           >
             <X className="w-6 h-6" />
@@ -453,7 +445,7 @@ const Orders = () => {
         </div>
       )}
 
-      {/* Delete Confirmation Modal */}
+      {/* Delete Confirmation */}
       {deleteConfirmOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setDeleteConfirmOpen(false)}></div>
@@ -463,23 +455,23 @@ const Orders = () => {
               <Trash2 className="w-8 h-8" />
             </div>
             
-            <h3 className="text-xl font-black text-white">تأكيد حذف الطلب</h3>
+            <h3 className="text-xl font-black text-white">Confirm Order Deletion</h3>
             <p className="text-slate-400 mt-2 text-sm font-medium">
-              هل أنت متأكد من رغبتك في حذف هذا الطلب بشكل نهائي؟ لا يمكن التراجع عن هذا الإجراء.
+              Are you sure you want to permanently delete this order? This action cannot be undone.
             </p>
 
             <div className="flex items-center gap-3 mt-8">
               <button
                 onClick={handleDeleteConfirm}
-                className="flex-1 bg-red-650 hover:bg-red-750 text-white font-bold py-3.5 rounded-2xl text-sm transition-colors cursor-pointer"
+                className="flex-1 bg-red-655 hover:bg-red-750 text-white font-bold py-3.5 rounded-2xl text-sm transition-colors cursor-pointer"
               >
-                نعم، احذف الطلب
+                Yes, Delete Order
               </button>
               <button
                 onClick={() => setDeleteConfirmOpen(false)}
                 className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3.5 rounded-2xl text-sm transition-colors cursor-pointer"
               >
-                تراجع
+                Cancel
               </button>
             </div>
           </div>

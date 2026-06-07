@@ -20,7 +20,7 @@ const Login = () => {
       await login(username, password);
       navigate('/');
     } catch (err) {
-      setError(err.message || 'حدث خطأ غير متوقع. يرجى المحاولة مرة أخرى.');
+      setError(err.message || 'An unexpected error occurred. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -41,12 +41,12 @@ const Login = () => {
         {/* Glass card container */}
         <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-[2.5rem] p-8 md:p-10 shadow-2xl shadow-slate-950/50">
           <div className="flex flex-col items-center mb-8 text-center">
-            {/* Logo placeholder/styling */}
+            {/* Logo */}
             <div className="w-16 h-16 bg-gradient-to-tr from-primary-500 to-secondary-500 rounded-2xl flex items-center justify-center shadow-lg shadow-primary-500/20 mb-4 transform hover:scale-105 transition-transform">
               <span className="text-2xl font-black text-white">K</span>
             </div>
-            <h1 className="text-2xl font-extrabold text-white tracking-tight">كيدزي | Kidzy Admin</h1>
-            <p className="text-slate-400 mt-1 text-sm font-medium">لوحة تحكم إدارة الطلبات والرسائل</p>
+            <h1 className="text-2xl font-extrabold text-white tracking-tight">Kidzy Admin</h1>
+            <p className="text-slate-400 mt-1 text-sm font-medium">Orders & Messages Management Dashboard</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -54,7 +54,7 @@ const Login = () => {
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="bg-red-500/20 border border-red-500/30 text-red-200 text-sm px-4 py-3 rounded-2xl flex items-center gap-3"
+                className="bg-red-500/20 border border-red-500/30 text-red-250 text-sm px-4 py-3 rounded-2xl flex items-center gap-3"
               >
                 <AlertCircle className="w-5 h-5 shrink-0" />
                 <span className="font-medium">{error}</span>
@@ -62,31 +62,31 @@ const Login = () => {
             )}
 
             <div className="space-y-2">
-              <label className="block text-slate-300 text-sm font-bold pr-1">اسم المستخدم</label>
+              <label className="block text-slate-300 text-sm font-bold pl-1">Username</label>
               <div className="relative">
-                <User className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                 <input
                   type="text"
                   required
-                  placeholder="أدخل اسم المستخدم"
+                  placeholder="Enter your username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="w-full bg-slate-950/40 border border-white/10 text-white rounded-2xl py-4 pr-12 pl-4 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all font-medium"
+                  className="w-full bg-slate-950/40 border border-white/10 text-white rounded-2xl py-4 pl-12 pr-4 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all font-medium"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <label className="block text-slate-300 text-sm font-bold pr-1">كلمة المرور</label>
+              <label className="block text-slate-300 text-sm font-bold pl-1">Password</label>
               <div className="relative">
-                <Lock className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                 <input
                   type="password"
                   required
-                  placeholder="أدخل كلمة المرور"
+                  placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-slate-950/40 border border-white/10 text-white rounded-2xl py-4 pr-12 pl-4 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all font-medium"
+                  className="w-full bg-slate-950/40 border border-white/10 text-white rounded-2xl py-4 pl-12 pr-4 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all font-medium"
                 />
               </div>
             </div>
@@ -101,10 +101,10 @@ const Login = () => {
               {loading ? (
                 <>
                   <Loader className="w-5 h-5 animate-spin" />
-                  <span>يرجى الانتظار...</span>
+                  <span>Please wait...</span>
                 </>
               ) : (
-                'تسجيل الدخول'
+                'Login'
               )}
             </motion.button>
           </form>

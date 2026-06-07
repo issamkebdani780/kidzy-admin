@@ -5,9 +5,7 @@ import {
   Phone, 
   MessageSquare, 
   Loader, 
-  Calendar, 
   User, 
-  X,
   Clock,
   Sparkles
 } from 'lucide-react';
@@ -31,7 +29,7 @@ const Messages = () => {
       }
     } catch (err) {
       console.error('Fetch messages error:', err);
-      setError('حدث خطأ أثناء تحميل الرسائل. يرجى المحاولة مرة أخرى.');
+      setError('An error occurred while loading messages. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -52,7 +50,7 @@ const Messages = () => {
         fetchMessagesData();
       }
     } catch (err) {
-      alert(err.message || 'فشل حذف الرسالة');
+      alert(err.message || 'Failed to delete message');
       setLoading(false);
     }
   };
@@ -73,11 +71,11 @@ const Messages = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black text-white">رسائل التواصل</h1>
-          <p className="text-slate-400 mt-1 font-medium">استفسارات وآراء العملاء الواردة من نموذج الاتصال</p>
+          <h1 className="text-3xl font-black text-white">Support Inquiries</h1>
+          <p className="text-slate-400 mt-1 font-medium">Customer inquiries and feedback received from the contact form</p>
         </div>
         <div className="bg-slate-900 border border-slate-800 text-slate-300 font-bold px-4 py-3 rounded-2xl text-sm shrink-0 self-start sm:self-auto">
-          إجمالي الرسائل: {messages.length}
+          Total Inquiries: {messages.length}
         </div>
       </div>
 
@@ -91,12 +89,12 @@ const Messages = () => {
       {loading ? (
         <div className="flex flex-col items-center justify-center py-24 gap-4">
           <Loader className="w-10 h-10 text-primary-500 animate-spin" />
-          <p className="text-slate-500 font-bold">جاري تحميل الرسائل...</p>
+          <p className="text-slate-500 font-bold">Loading messages...</p>
         </div>
       ) : messages.length === 0 ? (
         <div className="bg-slate-900 border border-slate-800 rounded-[2.5rem] py-24 flex flex-col items-center justify-center text-slate-500 gap-3 shadow-xl">
           <Mail className="w-12 h-12 text-slate-800" />
-          <p className="font-extrabold text-lg text-slate-400">لا توجد أي رسائل واردة حالياً</p>
+          <p className="font-extrabold text-lg text-slate-400">No support inquiries received yet</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -116,17 +114,17 @@ const Messages = () => {
                       <h3 className="font-extrabold text-white text-base leading-snug">{msg.name}</h3>
                       <a 
                         href={`tel:${msg.phone}`}
-                        className="text-xs text-slate-450 hover:text-primary-450 flex items-center gap-1.5 mt-1 font-bold"
+                        className="text-xs text-slate-400 hover:text-primary-400 flex items-center gap-1.5 mt-1 font-bold"
                       >
                         <Phone className="w-3.5 h-3.5" />
-                        <span className="dir-ltr">{msg.phone}</span>
+                        <span>{msg.phone}</span>
                       </a>
                     </div>
                   </div>
                   <div className="text-xs text-slate-500 font-bold flex items-center gap-1.5 mt-1">
                     <Clock className="w-3.5 h-3.5" />
                     <span>
-                      {new Date(msg.created_at).toLocaleDateString('ar-DZ', { 
+                      {new Date(msg.created_at).toLocaleDateString('en-US', { 
                         day: 'numeric', 
                         month: 'short', 
                         hour: '2-digit', 
@@ -138,7 +136,7 @@ const Messages = () => {
 
                 {/* Message Content */}
                 <div className="bg-slate-950/30 border border-slate-850/40 rounded-2xl p-4 md:p-5 mb-6">
-                  <p className="text-slate-300 text-sm leading-relaxed whitespace-pre-wrap font-medium">
+                  <p className="text-slate-350 text-sm leading-relaxed whitespace-pre-wrap font-medium">
                     {msg.message}
                   </p>
                 </div>
@@ -153,13 +151,13 @@ const Messages = () => {
                   className="flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-2xl text-xs shadow-lg transition-colors cursor-pointer"
                 >
                   <MessageSquare className="w-4 h-4" />
-                  <span>رد عبر واتساب</span>
+                  <span>Reply on WhatsApp</span>
                 </a>
                 
                 <button
                   onClick={() => { setDeleteId(msg.id); setDeleteConfirmOpen(true); }}
                   className="p-3 bg-red-500/10 hover:bg-red-650 hover:text-white border border-red-500/10 hover:border-transparent text-red-400 rounded-2xl transition-all cursor-pointer"
-                  title="حذف الرسالة"
+                  title="Delete Message"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -169,7 +167,7 @@ const Messages = () => {
         </div>
       )}
 
-      {/* Delete Confirmation Modal */}
+      {/* Delete Confirmation */}
       {deleteConfirmOpen && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setDeleteConfirmOpen(false)}></div>
@@ -179,9 +177,9 @@ const Messages = () => {
               <Trash2 className="w-8 h-8" />
             </div>
             
-            <h3 className="text-xl font-black text-white">تأكيد حذف الرسالة</h3>
+            <h3 className="text-xl font-black text-white">Confirm Message Deletion</h3>
             <p className="text-slate-400 mt-2 text-sm font-medium">
-              هل أنت متأكد من رغبتك في حذف هذا الاستفسار بشكل نهائي؟ لا يمكن التراجع عن هذا الإجراء.
+              Are you sure you want to permanently delete this support inquiry? This action cannot be undone.
             </p>
 
             <div className="flex items-center gap-3 mt-8">
@@ -189,13 +187,13 @@ const Messages = () => {
                 onClick={handleDeleteConfirm}
                 className="flex-1 bg-red-650 hover:bg-red-750 text-white font-bold py-3.5 rounded-2xl text-sm transition-colors cursor-pointer"
               >
-                نعم، احذف الرسالة
+                Yes, Delete Message
               </button>
               <button
                 onClick={() => setDeleteConfirmOpen(false)}
                 className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-3.5 rounded-2xl text-sm transition-colors cursor-pointer"
               >
-                تراجع
+                Cancel
               </button>
             </div>
           </div>

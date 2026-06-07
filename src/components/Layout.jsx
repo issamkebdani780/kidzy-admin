@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   LayoutDashboard,
@@ -9,23 +9,22 @@ import {
   Menu,
   X,
   BookOpen,
-  ChevronLeft
+  ChevronRight
 } from 'lucide-react';
 import { logout } from '../services/api';
 
 const Layout = ({ children }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
-  const navigate = useNavigate();
   
   // Extract user info
   const userString = localStorage.getItem('kidzy_admin_user');
-  const user = userString ? JSON.parse(userString) : { username: 'المدير' };
+  const user = userString ? JSON.parse(userString) : { username: 'Admin' };
 
   const menuItems = [
-    { name: 'لوحة التحكم', path: '/', icon: LayoutDashboard },
-    { name: 'إدارة الطلبات', path: '/orders', icon: ShoppingBag },
-    { name: 'رسائل التواصل', path: '/messages', icon: Mail },
+    { name: 'Dashboard', path: '/', icon: LayoutDashboard },
+    { name: 'Orders', path: '/orders', icon: ShoppingBag },
+    { name: 'Messages', path: '/messages', icon: Mail },
   ];
 
   const handleLogoutClick = () => {
@@ -40,8 +39,8 @@ const Layout = ({ children }) => {
           <BookOpen className="w-5 h-5 text-white" />
         </div>
         <div>
-          <h2 className="font-extrabold text-white text-lg leading-tight">كيدزي | Kidzy</h2>
-          <p className="text-xs text-slate-500 font-medium">لوحة التحكم</p>
+          <h2 className="font-extrabold text-white text-lg leading-tight">Kidzy Store</h2>
+          <p className="text-xs text-slate-500 font-medium">Admin Dashboard</p>
         </div>
       </div>
 
@@ -54,7 +53,7 @@ const Layout = ({ children }) => {
               <div
                 className={`flex items-center justify-between px-4 py-3.5 rounded-2xl font-bold transition-all group cursor-pointer ${
                   isActive
-                    ? 'bg-gradient-to-r from-primary-600 to-primary-500 text-white shadow-lg shadow-primary-500/20'
+                    ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg shadow-primary-500/20'
                     : 'hover:bg-slate-800/60 hover:text-white text-slate-400'
                 }`}
               >
@@ -62,7 +61,7 @@ const Layout = ({ children }) => {
                   <item.icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-white'}`} />
                   <span>{item.name}</span>
                 </div>
-                {isActive && <ChevronLeft className="w-4 h-4 text-white" />}
+                {isActive && <ChevronRight className="w-4 h-4 text-white" />}
               </div>
             </Link>
           );
@@ -77,7 +76,7 @@ const Layout = ({ children }) => {
           </div>
           <div className="overflow-hidden">
             <p className="font-bold text-white text-sm truncate">{user.username}</p>
-            <p className="text-xs text-slate-500 font-semibold truncate">صلاحية كاملة</p>
+            <p className="text-xs text-slate-500 font-semibold truncate">Full Access</p>
           </div>
         </div>
         <button
@@ -85,7 +84,7 @@ const Layout = ({ children }) => {
           className="w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-2xl bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white font-bold transition-all cursor-pointer"
         >
           <LogOut className="w-5 h-5" />
-          <span>تسجيل الخروج</span>
+          <span>Logout</span>
         </button>
       </div>
     </div>
@@ -93,8 +92,8 @@ const Layout = ({ children }) => {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-slate-950">
-      {/* Desktop Sidebar (hidden on mobile) */}
-      <aside className="hidden md:block w-72 h-screen sticky top-0 shrink-0 border-l border-slate-800 shadow-xl z-20">
+      {/* Desktop Sidebar */}
+      <aside className="hidden md:block w-72 h-screen sticky top-0 shrink-0 border-r border-slate-800 shadow-xl z-20">
         {sidebarContent}
       </aside>
 
@@ -104,7 +103,7 @@ const Layout = ({ children }) => {
           <div className="w-8 h-8 bg-gradient-to-tr from-primary-500 to-secondary-500 rounded-lg flex items-center justify-center">
             <BookOpen className="w-4 h-4 text-white" />
           </div>
-          <h1 className="font-black text-lg">كيدزي</h1>
+          <h1 className="font-black text-lg">Kidzy</h1>
         </div>
         <button
           onClick={() => setMobileOpen(true)}
@@ -114,10 +113,10 @@ const Layout = ({ children }) => {
         </button>
       </header>
 
-      {/* Mobile Drawer Navigation (using Framer Motion) */}
+      {/* Mobile Drawer Navigation */}
       <AnimatePresence>
         {mobileOpen && (
-          <div className="fixed inset-0 z-50 md:hidden flex justify-end">
+          <div className="fixed inset-0 z-50 md:hidden flex justify-start">
             {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
@@ -129,15 +128,15 @@ const Layout = ({ children }) => {
             
             {/* Sidebar drawer */}
             <motion.div
-              initial={{ x: '100%' }}
+              initial={{ x: '-100%' }}
               animate={{ x: 0 }}
-              exit={{ x: '100%' }}
+              exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
               className="relative w-72 h-full shadow-2xl z-10"
             >
               <button
                 onClick={() => setMobileOpen(false)}
-                className="absolute top-4 left-4 p-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl z-20 cursor-pointer"
+                className="absolute top-4 right-4 p-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl z-20 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
