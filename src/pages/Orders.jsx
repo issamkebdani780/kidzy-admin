@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { 
   Search, 
   Eye, 
@@ -10,9 +10,124 @@ import {
   ChevronLeft,
   X,
   Calendar,
-  Sparkles
+  Sparkles,
+  ChevronDown,
+  Check,
+  Clock,
+  Image,
+  Truck,
+  CheckCircle,
+  XCircle
 } from 'lucide-react';
 import { getOrders, updateOrderStatus, deleteOrder, getOrderHistory } from '../services/api';
+
+const StatusDropdown = ({ value, onChange, disabled, size = 'md' }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  const statuses = [
+    { value: 'pending', label: 'Pending', icon: Clock, color: 'text-yellow-400' },
+    { value: 'img_confiremed', label: 'Image Confirmed', icon: Image, color: 'text-blue-400' },
+    { value: 'in_delivery', label: 'In Delivery', icon: Truck, color: 'text-purple-400' },
+    { value: 'paid', label: 'Paid', icon: CheckCircle, color: 'text-green-400' },
+    { value: 'cancelled', label: 'Cancelled', icon: XCircle, color: 'text-red-400' },
+  ];
+
+  const currentKey = value === 'in delivery' ? 'in_delivery' : value;
+  const current = statuses.find(s => s.value === currentKey) || statuses[0];
+  const CurrentIcon = current.icon;
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const triggerClasses = size === 'sm'
+    ? 'px-3 py-2 rounded-xl text-xs gap-2'
+    : 'px-4.5 py-3 rounded-2xl text-sm gap-3';
+
+  const iconClasses = size === 'sm'
+    ? 'w-3.5 h-3.5'
+    : 'w-4 h-4';
+
+  const itemPadding = size === 'sm'
+    ? 'px-3 py-2 text-xs'
+    : 'px-4.5 py-3.5 text-sm';
+
+  return (
+    <div ref={dropdownRef} className="relative inline-block w-full text-left">
+      <style>{`
+        .custom-select-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-select-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-select-scrollbar::-webkit-scrollbar-thumb {
+          background: #334155;
+          border-radius: 9999px;
+        }
+        .custom-select-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: #475569;
+        }
+      `}</style>
+
+      <button
+        type="button"
+        disabled={disabled}
+        onClick={() => setIsOpen(!isOpen)}
+        className={`w-full flex items-center justify-between border bg-slate-950/45 hover:bg-slate-900/60 text-slate-200 transition-all duration-200 outline-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${triggerClasses} ${
+          isOpen 
+            ? 'border-sky-500 shadow-[0_0_0_4px_rgba(56,189,248,0.15)]' 
+            : 'border-slate-800'
+        }`}
+      >
+        <span className="flex items-center gap-2.5 min-w-0">
+          <CurrentIcon className={`${iconClasses} ${current.color} shrink-0`} />
+          <span className="font-semibold text-slate-200 truncate">{current.label}</span>
+        </span>
+        <ChevronDown 
+          className={`${iconClasses} text-slate-500 shrink-0 transition-transform duration-200`} 
+          style={{ transform: isOpen ? 'rotate(180deg)' : 'none' }} 
+        />
+      </button>
+
+      {isOpen && (
+        <div className="absolute left-0 right-0 mt-1.5 z-40 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl py-1.5 max-h-60 overflow-y-auto custom-select-scrollbar min-w-[180px]">
+          {statuses.map((s) => {
+            const isSelected = currentKey === s.value;
+            const ItemIcon = s.icon;
+            return (
+              <button
+                key={s.value}
+                type="button"
+                onClick={() => {
+                  const nextValue = s.value === 'in_delivery' ? 'in delivery' : s.value;
+                  onChange(nextValue);
+                  setIsOpen(false);
+                }}
+                className={`w-full flex items-center justify-between hover:bg-slate-800/80 font-semibold transition-colors cursor-pointer text-left ${itemPadding} ${
+                  isSelected ? 'bg-slate-850 text-white font-bold' : 'text-slate-350'
+                }`}
+              >
+                <span className="flex items-center gap-3 min-w-0">
+                  <ItemIcon className={`${iconClasses} ${s.color} shrink-0`} />
+                  <span className="truncate">{s.label}</span>
+                </span>
+                {isSelected && <Check className={`${iconClasses} text-sky-400 shrink-0`} />}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+};
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
@@ -283,20 +398,12 @@ const Orders = () => {
                     <td className="py-4 px-6 text-slate-350">{order.phone}</td>
                     <td className="py-4 px-6 text-slate-350">{translateStory(order.story_type)}</td>
                     <td className="py-4 px-6">
-                      <select
+                      <StatusDropdown
                         value={order.status}
                         disabled={updatingId === order.id}
-                        onChange={(e) => handleStatusChange(order.id, e.target.value)}
-                        className={`px-3 py-1.5 rounded-full border text-xs font-bold bg-slate-900 outline-none cursor-pointer border-slate-800 ${
-                          statusBadges[order.status]?.class
-                        }`}
-                      >
-                        <option value="pending">Pending</option>
-                        <option value="img_confiremed">Image Confirmed</option>
-                        <option value="in delivery">In Delivery</option>
-                        <option value="paid">Paid</option>
-                        <option value="cancelled">Cancelled</option>
-                      </select>
+                        onChange={(val) => handleStatusChange(order.id, val)}
+                        size="sm"
+                      />
                     </td>
                     <td className="py-4 px-6 text-right">
                       <div className="flex items-center justify-end gap-2">
@@ -413,19 +520,10 @@ const Orders = () => {
                 {/* Status selector */}
                 <div className="mt-6 space-y-2">
                   <label className="block text-xs font-bold text-slate-500">Current Order Status</label>
-                  <select
+                  <StatusDropdown
                     value={selectedOrder.status}
-                    onChange={(e) => handleStatusChange(selectedOrder.id, e.target.value)}
-                    className={`w-full px-4 py-3 rounded-2xl border text-sm font-bold bg-slate-950/40 outline-none cursor-pointer border-slate-850 ${
-                      statusBadges[selectedOrder.status]?.class
-                    }`}
-                  >
-                    <option value="pending">Pending</option>
-                    <option value="img_confiremed">Image Confirmed</option>
-                    <option value="in delivery">In Delivery</option>
-                    <option value="paid">Paid</option>
-                    <option value="cancelled">Cancelled</option>
-                  </select>
+                    onChange={(val) => handleStatusChange(selectedOrder.id, val)}
+                  />
                 </div>
               </div>
 
