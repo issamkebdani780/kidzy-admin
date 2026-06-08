@@ -329,21 +329,6 @@ const Orders = () => {
     }
   };
 
-  // Format WhatsApp Link
-  const formatWhatsAppLink = (phone, kidName, storyType) => {
-    let cleanPhone = phone.replace(/[^\d]/g, '');
-    if (cleanPhone.startsWith('0')) {
-      cleanPhone = '213' + cleanPhone.substring(1);
-    } else if (!cleanPhone.startsWith('213') && cleanPhone.length === 9) {
-      cleanPhone = '213' + cleanPhone;
-    }
-
-    const storyName = translateStory(storyType);
-    const message = encodeURIComponent(`مرحباً بكم من متجر Kidzy! 📚\nنحن بصدد مراجعة طلبكم الخاص بالطفل(ة) "${kidName}" ونوع القصة "${storyName}".\nنريد تأكيد بعض التفاصيل معكم لبدء التصميم والطباعة.`);
-    
-    return `https://wa.me/${cleanPhone}?text=${message}`;
-  };
-
   // Story translation helper
   const translateStory = (story) => {
     const storiesMapping = {
@@ -751,22 +736,14 @@ const Orders = () => {
               </div>
 
               {/* Actions Footer */}
-              <div className="mt-8 pt-4 border-t border-slate-800 flex items-center justify-between gap-3">
-                <a
-                  href={formatWhatsAppLink(selectedOrder.phone, selectedOrder.kid_name, selectedOrder.story_type)}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 rounded-2xl shadow-lg transition-colors cursor-pointer text-sm"
-                >
-                  <MessageSquare className="w-4 h-4" />
-                  <span>WhatsApp Chat</span>
-                </a>
+              <div className="mt-8 pt-4 border-t border-slate-800 flex items-center justify-end">
                 <button
                   onClick={() => { setDeleteId(selectedOrder.id); setDeleteConfirmOpen(true); }}
-                  className="p-3.5 bg-red-500/10 hover:bg-red-650 hover:text-white rounded-2xl transition-colors cursor-pointer"
+                  className="flex items-center justify-center gap-2 bg-red-500/10 hover:bg-red-600 hover:text-white text-red-400 font-bold py-3.5 px-6 rounded-2xl transition-colors cursor-pointer text-sm"
                   title="Delete Order Permanently"
                 >
-                  <Trash2 className="w-5 h-5" />
+                  <Trash2 className="w-4 h-4" />
+                  <span>Delete Order</span>
                 </button>
               </div>
             </div>
