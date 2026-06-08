@@ -32,36 +32,36 @@ const Layout = ({ children }) => {
   };
 
   const sidebarContent = (
-    <div className="flex flex-col h-full bg-slate-900 text-slate-300">
+    <div className="flex flex-col h-full bg-white text-slate-650 border-r border-slate-200/80">
       {/* Sidebar Header */}
-      <div className="flex items-center gap-3 px-6 py-6 border-b border-slate-800">
-        <div className="w-10 h-10 bg-gradient-to-tr from-primary-500 to-secondary-500 rounded-xl flex items-center justify-center shadow-md shadow-primary-500/10">
-          <BookOpen className="w-5 h-5 text-white" />
+      <div className="flex items-center gap-3 px-6 py-6 border-b border-slate-200/80">
+        <div className="w-9 h-9 bg-slate-900 rounded-lg flex items-center justify-center">
+          <BookOpen className="w-4 h-4 text-white" />
         </div>
         <div>
-          <h2 className="font-extrabold text-white text-lg leading-tight">Kidzy Store</h2>
-          <p className="text-xs text-slate-500 font-medium">Admin Dashboard</p>
+          <h2 className="font-bold text-slate-900 text-base leading-tight">Kidzy Store</h2>
+          <p className="text-[11px] text-slate-400 font-medium">Admin Panel</p>
         </div>
       </div>
 
       {/* Menu Links */}
-      <nav className="flex-1 px-4 py-6 space-y-2">
+      <nav className="flex-1 px-4 py-6 space-y-1">
         {menuItems.map((item) => {
           const isActive = location.pathname === item.path;
           return (
             <Link key={item.path} to={item.path} onClick={() => setMobileOpen(false)}>
               <div
-                className={`flex items-center justify-between px-4 py-3.5 rounded-2xl font-bold transition-all group cursor-pointer ${
+                className={`flex items-center justify-between px-4 py-2.5 rounded-xl font-semibold text-sm transition-all group cursor-pointer ${
                   isActive
-                    ? 'bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-lg shadow-primary-500/20'
-                    : 'hover:bg-slate-800/60 hover:text-white text-slate-400'
+                    ? 'bg-blue-600 text-white shadow-sm'
+                    : 'hover:bg-slate-50 text-slate-600 hover:text-slate-900'
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <item.icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-white'}`} />
+                  <item.icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-400 group-hover:text-slate-700'}`} />
                   <span>{item.name}</span>
                 </div>
-                {isActive && <ChevronRight className="w-4 h-4 text-white" />}
+                {isActive && <ChevronRight className="w-3.5 h-3.5 text-white" />}
               </div>
             </Link>
           );
@@ -69,21 +69,21 @@ const Layout = ({ children }) => {
       </nav>
 
       {/* User Info & Logout */}
-      <div className="p-4 border-t border-slate-800">
-        <div className="bg-slate-850 rounded-2xl p-4 flex items-center gap-3 mb-3">
-          <div className="w-10 h-10 rounded-full bg-primary-500/20 flex items-center justify-center font-bold text-primary-400 text-lg">
+      <div className="p-4 border-t border-slate-200/80">
+        <div className="bg-slate-50 rounded-xl p-3 flex items-center gap-3 mb-3">
+          <div className="w-9 h-9 rounded-full bg-blue-50 flex items-center justify-center font-bold text-blue-600 text-base">
             {user.username ? user.username[0].toUpperCase() : 'A'}
           </div>
           <div className="overflow-hidden">
-            <p className="font-bold text-white text-sm truncate">{user.username}</p>
-            <p className="text-xs text-slate-500 font-semibold truncate">Full Access</p>
+            <p className="font-bold text-slate-900 text-sm truncate">{user.username}</p>
+            <p className="text-[11px] text-slate-400 font-semibold truncate">Full Access</p>
           </div>
         </div>
         <button
           onClick={handleLogoutClick}
-          className="w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-2xl bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white font-bold transition-all cursor-pointer"
+          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-red-50/50 text-red-600 hover:text-red-700 font-semibold text-sm transition-all cursor-pointer shadow-sm"
         >
-          <LogOut className="w-5 h-5" />
+          <LogOut className="w-4 h-4" />
           <span>Logout</span>
         </button>
       </div>
@@ -91,23 +91,23 @@ const Layout = ({ children }) => {
   );
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-slate-950">
+    <div className="min-h-screen flex flex-col md:flex-row bg-slate-50">
       {/* Desktop Sidebar */}
-      <aside className="hidden md:block w-72 h-screen sticky top-0 shrink-0 border-r border-slate-800 shadow-xl z-20">
+      <aside className="hidden md:block w-72 h-screen sticky top-0 shrink-0 border-r border-slate-200/80 z-20">
         {sidebarContent}
       </aside>
 
       {/* Mobile Top Navbar */}
-      <header className="md:hidden flex items-center justify-between px-6 py-4 bg-slate-900 border-b border-slate-800 text-white z-20">
+      <header className="md:hidden flex items-center justify-between px-6 py-4 bg-white border-b border-slate-200/80 text-slate-900 z-20">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-gradient-to-tr from-primary-500 to-secondary-500 rounded-lg flex items-center justify-center">
+          <div className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center">
             <BookOpen className="w-4 h-4 text-white" />
           </div>
-          <h1 className="font-black text-lg">Kidzy</h1>
+          <h1 className="font-bold text-base">Kidzy</h1>
         </div>
         <button
           onClick={() => setMobileOpen(true)}
-          className="p-2 bg-slate-800 hover:bg-slate-700 rounded-xl transition-colors cursor-pointer"
+          className="p-2 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl transition-colors cursor-pointer"
         >
           <Menu className="w-6 h-6" />
         </button>
@@ -120,7 +120,7 @@ const Layout = ({ children }) => {
             {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
-              animate={{ opacity: 0.5 }}
+              animate={{ opacity: 0.25 }}
               exit={{ opacity: 0 }}
               onClick={() => setMobileOpen(false)}
               className="absolute inset-0 bg-black"
@@ -132,11 +132,11 @@ const Layout = ({ children }) => {
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-              className="relative w-72 h-full shadow-2xl z-10"
+              className="relative w-72 h-full shadow-xl z-10"
             >
               <button
                 onClick={() => setMobileOpen(false)}
-                className="absolute top-4 right-4 p-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl z-20 cursor-pointer"
+                className="absolute top-4 right-4 p-2 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl z-20 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -147,7 +147,7 @@ const Layout = ({ children }) => {
       </AnimatePresence>
 
       {/* Main Content Area */}
-      <main className="flex-1 min-h-screen overflow-y-auto bg-slate-950 p-6 md:p-10 text-slate-100">
+      <main className="flex-1 min-h-screen overflow-y-auto bg-slate-50 p-6 md:p-10 text-slate-800">
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}

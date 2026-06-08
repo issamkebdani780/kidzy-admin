@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Lock, User, AlertCircle, Loader } from 'lucide-react';
+import { Lock, User, AlertCircle, Loader, BookOpen } from 'lucide-react';
 import { login } from '../services/api';
 
 const Login = () => {
@@ -27,80 +27,76 @@ const Login = () => {
   };
 
   return (
-    <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-slate-900 px-4">
-      {/* Dynamic blurred color nodes for high-end backdrop */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary-600 rounded-full mix-blend-screen filter blur-[120px] opacity-40 animate-pulse"></div>
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary-500 rounded-full mix-blend-screen filter blur-[120px] opacity-30 animate-pulse delay-75"></div>
-
+    <div className="relative min-h-screen w-full flex items-center justify-center bg-slate-50 px-4">
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
+        initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: 'easeOut' }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
         className="w-full max-w-md z-10"
       >
-        {/* Glass card container */}
-        <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-[2.5rem] p-8 md:p-10 shadow-2xl shadow-slate-950/50">
+        {/* Simple card container */}
+        <div className="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm">
           <div className="flex flex-col items-center mb-8 text-center">
             {/* Logo */}
-            <div className="w-16 h-16 bg-gradient-to-tr from-primary-500 to-secondary-500 rounded-2xl flex items-center justify-center shadow-lg shadow-primary-500/20 mb-4 transform hover:scale-105 transition-transform">
-              <span className="text-2xl font-black text-white">K</span>
+            <div className="w-12 h-12 bg-slate-900 rounded-xl flex items-center justify-center mb-4">
+              <BookOpen className="w-6 h-6 text-white" />
             </div>
-            <h1 className="text-2xl font-extrabold text-white tracking-tight">Kidzy Admin</h1>
-            <p className="text-slate-400 mt-1 text-sm font-medium">Orders & Messages Management Dashboard</p>
+            <h1 className="text-xl font-bold text-slate-900 tracking-tight">Kidzy Admin Panel</h1>
+            <p className="text-slate-500 mt-1.5 text-xs font-medium">Manage orders and support messages</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-5">
             {error && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
+                initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="bg-red-500/20 border border-red-500/30 text-red-250 text-sm px-4 py-3 rounded-2xl flex items-center gap-3"
+                className="bg-red-50 border border-red-200 text-red-700 text-xs px-3.5 py-2.5 rounded-xl flex items-center gap-2.5"
               >
-                <AlertCircle className="w-5 h-5 shrink-0" />
-                <span className="font-medium">{error}</span>
+                <AlertCircle className="w-4.5 h-4.5 shrink-0" />
+                <span className="font-semibold">{error}</span>
               </motion.div>
             )}
 
-            <div className="space-y-2">
-              <label className="block text-slate-300 text-sm font-bold pl-1">Username</label>
+            <div className="space-y-1.5">
+              <label className="block text-slate-700 text-xs font-semibold pl-0.5">Username</label>
               <div className="relative">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-400" />
                 <input
                   type="text"
                   required
                   placeholder="Enter your username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="w-full bg-slate-950/40 border border-white/10 text-white rounded-2xl py-4 pl-12 pr-4 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all font-medium"
+                  className="w-full bg-white border border-slate-250 text-slate-900 placeholder-slate-400 rounded-xl py-3 pl-11 pr-4 outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all text-sm font-medium shadow-none"
                 />
               </div>
             </div>
 
-            <div className="space-y-2">
-              <label className="block text-slate-300 text-sm font-bold pl-1">Password</label>
+            <div className="space-y-1.5">
+              <label className="block text-slate-700 text-xs font-semibold pl-0.5">Password</label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-400" />
                 <input
                   type="password"
                   required
                   placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-slate-950/40 border border-white/10 text-white rounded-2xl py-4 pl-12 pr-4 outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all font-medium"
+                  className="w-full bg-white border border-slate-250 text-slate-900 placeholder-slate-400 rounded-xl py-3 pl-11 pr-4 outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 transition-all text-sm font-medium shadow-none"
                 />
               </div>
             </div>
 
             <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.99 }}
               disabled={loading}
               type="submit"
-              className="w-full bg-gradient-to-r from-primary-500 to-secondary-500 hover:from-primary-600 hover:to-secondary-600 text-white rounded-2xl py-4 font-bold text-lg shadow-xl shadow-primary-500/10 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-3 font-semibold text-sm shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <>
-                  <Loader className="w-5 h-5 animate-spin" />
+                  <Loader className="w-4 h-4 animate-spin" />
                   <span>Please wait...</span>
                 </>
               ) : (
