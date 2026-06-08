@@ -21,7 +21,7 @@ const fetchWithAuth = async (endpoint, options = {}) => {
   const token = getToken();
   
   const headers = {
-    'Content-Type': 'application/json',
+    ...(options.body instanceof FormData ? {} : { 'Content-Type': 'application/json' }),
     ...(token && { 'Authorization': `Bearer ${token}` }),
     ...options.headers,
   };
@@ -87,6 +87,13 @@ export const updateOrderStatus = async (id, status) => {
   return fetchWithAuth(`/api/orders/${id}/status`, {
     method: 'PUT',
     body: JSON.stringify({ status }),
+  });
+};
+
+export const updateOrderDetails = async (id, formData) => {
+  return fetchWithAuth(`/api/orders/${id}`, {
+    method: 'PUT',
+    body: formData,
   });
 };
 

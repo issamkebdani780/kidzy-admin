@@ -17,9 +17,12 @@ import {
   Image,
   Truck,
   CheckCircle,
-  XCircle
+  XCircle,
+  Upload,
+  ExternalLink,
+  Save
 } from 'lucide-react';
-import { getOrders, updateOrderStatus, deleteOrder, getOrderHistory } from '../services/api';
+import { getOrders, updateOrderStatus, deleteOrder, getOrderHistory, updateOrderDetails } from '../services/api';
 
 const StatusDropdown = ({ value, onChange, disabled, size = 'md' }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -153,7 +156,21 @@ const Orders = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
-  const [zoomImage, setZoomImage] = useState(false);
+  const [zoomImageSrc, setZoomImageSrc] = useState(null);
+
+  // New features state
+  const [canvaUrlInput, setCanvaUrlInput] = useState('');
+  const [savingCanva, setSavingCanva] = useState(false);
+  const [uploadingChar, setUploadingChar] = useState(false);
+
+  // Synchronize Canva URL input when selected order changes
+  useEffect(() => {
+    if (selectedOrder) {
+      setCanvaUrlInput(selectedOrder.canva_url || '');
+    } else {
+      setCanvaUrlInput('');
+    }
+  }, [selectedOrder]);
 
   const fetchOrdersData = async () => {
     try {
@@ -244,6 +261,71 @@ const Orders = () => {
     } catch (err) {
       alert(err.message || 'Failed to delete order');
       setLoading(false);
+    }
+  };
+
+  // Handle upload of kid's character illustration
+  const handleCharacterImageUpload = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setUploadingChar(true);
+      const formData = new FormData();
+      formData.append('character_image', file);
+
+      const res = await updateOrderDetails(selectedOrder.id, formData);
+      if (res.success) {
+        // Update local orders list state
+        setOrders(prev => prev.map(o => o.id === selectedOrder.id ? { ...o, kid_char_image_url: res.order.kid_char_image_url } : o));
+        // Update selectedOrder modal state
+        setSelectedOrder(prev => ({ ...prev, kid_char_image_url: res.order.kid_char_image_url }));
+
+        // Refresh order history
+        try {
+          const histRes = await getOrderHistory(selectedOrder.id);
+          if (histRes.success) {
+            setOrderHistory(histRes.history || []);
+          }
+        } catch (histErr) {
+          console.error('Failed to reload order history:', histErr);
+        }
+      }
+    } catch (err) {
+      alert(err.message || 'Failed to upload character illustration');
+    } finally {
+      setUploadingChar(false);
+    }
+  };
+
+  // Handle saving the Canva link
+  const handleSaveCanvaUrl = async () => {
+    try {
+      setSavingCanva(true);
+      const formData = new FormData();
+      formData.append('canva_url', canvaUrlInput);
+
+      const res = await updateOrderDetails(selectedOrder.id, formData);
+      if (res.success) {
+        // Update local orders list state
+        setOrders(prev => prev.map(o => o.id === selectedOrder.id ? { ...o, canva_url: res.order.canva_url } : o));
+        // Update selectedOrder modal state
+        setSelectedOrder(prev => ({ ...prev, canva_url: res.order.canva_url }));
+
+        // Refresh order history
+        try {
+          const histRes = await getOrderHistory(selectedOrder.id);
+          if (histRes.success) {
+            setOrderHistory(histRes.history || []);
+          }
+        } catch (histErr) {
+          console.error('Failed to reload order history:', histErr);
+        }
+      }
+    } catch (err) {
+      alert(err.message || 'Failed to save Canva link');
+    } finally {
+      setSavingCanva(false);
     }
   };
 
@@ -380,6 +462,8 @@ const Orders = () => {
                   <th className="py-4 px-6">Kid Name</th>
                   <th className="py-4 px-6">Phone Number</th>
                   <th className="py-4 px-6">Story Type</th>
+                  <th className="py-4 px-6">Character</th>
+                  <th className="py-4 px-6">Canva</th>
                   <th className="py-4 px-6">Status</th>
                   <th className="py-4 px-6 text-right">Actions</th>
                 </tr>
@@ -397,6 +481,34 @@ const Orders = () => {
                     <td className="py-4 px-6 font-bold text-white text-base">{order.kid_name}</td>
                     <td className="py-4 px-6 text-slate-350">{order.phone}</td>
                     <td className="py-4 px-6 text-slate-350">{translateStory(order.story_type)}</td>
+                    <td className="py-4 px-6">
+                      {order.kid_char_image_url ? (
+                        <div className="w-10 h-10 rounded-lg overflow-hidden border border-slate-800 bg-slate-950 flex-shrink-0">
+                          <img
+                            src={order.kid_char_image_url}
+                            alt="Character"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <span className="text-slate-600 text-xs font-semibold">Not Uploaded</span>
+                      )}
+                    </td>
+                    <td className="py-4 px-6">
+                      {order.canva_url ? (
+                        <a
+                          href={order.canva_url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center gap-1 px-3 py-1.5 bg-purple-550/10 hover:bg-purple-650/35 border border-purple-500/25 text-purple-400 rounded-lg text-xs font-bold transition-all cursor-pointer"
+                        >
+                          <span>Canva</span>
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
+                      ) : (
+                        <span className="text-slate-600 text-xs font-semibold">No Link</span>
+                      )}
+                    </td>
                     <td className="py-4 px-6">
                       <StatusDropdown
                         value={order.status}
@@ -467,21 +579,89 @@ const Orders = () => {
               <X className="w-5 h-5" />
             </button>
 
-            {/* Image Preview (Left Column) */}
-            <div className="w-full lg:w-1/3 flex flex-col items-start">
-              <h3 className="text-slate-400 text-xs font-bold mb-3">Child Photo</h3>
-              <div 
-                className="w-full aspect-[4/3] md:aspect-square bg-slate-950 rounded-2xl overflow-hidden border border-slate-800 relative group cursor-pointer"
-                onClick={() => setZoomImage(true)}
-              >
-                <img
-                  src={selectedOrder.image_url}
-                  alt={selectedOrder.kid_name}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-white text-xs font-bold">
-                  Click to Zoom
+            {/* Image Previews (Left Column) */}
+            <div className="w-full lg:w-1/3 flex flex-col gap-6">
+              {/* Child Photo */}
+              <div className="flex flex-col items-start w-full">
+                <h3 className="text-slate-400 text-xs font-bold mb-3">Child Photo</h3>
+                <div 
+                  className="w-full aspect-[4/3] md:aspect-square bg-slate-950 rounded-2xl overflow-hidden border border-slate-800 relative group cursor-pointer"
+                  onClick={() => setZoomImageSrc(selectedOrder.image_url)}
+                >
+                  <img
+                    src={selectedOrder.image_url}
+                    alt={selectedOrder.kid_name}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-white text-xs font-bold">
+                    Click to Zoom
+                  </div>
                 </div>
+              </div>
+
+              {/* Kid Character Photo */}
+              <div className="flex flex-col items-start w-full">
+                <h3 className="text-slate-400 text-xs font-bold mb-3">Character Illustration</h3>
+                {selectedOrder.kid_char_image_url ? (
+                  <div className="w-full relative group">
+                    <div 
+                      className="w-full aspect-[4/3] md:aspect-square bg-slate-950 rounded-2xl overflow-hidden border border-slate-800 relative cursor-pointer"
+                      onClick={() => setZoomImageSrc(selectedOrder.kid_char_image_url)}
+                    >
+                      <img
+                        src={selectedOrder.kid_char_image_url}
+                        alt="Character illustration"
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-white text-xs font-bold">
+                        Click to Zoom
+                      </div>
+                    </div>
+                    
+                    {/* Upload button overlay */}
+                    <label className="absolute bottom-3 right-3 px-3 py-1.5 bg-slate-900/90 hover:bg-slate-800 text-white rounded-xl border border-slate-700/50 text-xs font-bold cursor-pointer transition-all flex items-center gap-1.5 shadow-lg">
+                      <Upload className="w-3.5 h-3.5" />
+                      <span>{uploadingChar ? 'Uploading...' : 'Change'}</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleCharacterImageUpload}
+                        disabled={uploadingChar}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+                ) : (
+                  <label className={`w-full aspect-[4/3] md:aspect-square rounded-2xl border-2 border-dashed flex flex-col items-center justify-center gap-3 cursor-pointer transition-all hover:bg-slate-850/30 ${
+                    uploadingChar 
+                      ? 'border-primary-500/50 bg-slate-950/20' 
+                      : 'border-slate-800 hover:border-slate-700 bg-slate-950/45'
+                  }`}>
+                    {uploadingChar ? (
+                      <>
+                        <Loader className="w-8 h-8 text-primary-500 animate-spin" />
+                        <span className="text-xs text-slate-500 font-bold">Uploading illustration...</span>
+                      </>
+                    ) : (
+                      <>
+                        <div className="w-12 h-12 bg-slate-850 rounded-2xl flex items-center justify-center border border-slate-800 text-slate-400">
+                          <Upload className="w-5 h-5" />
+                        </div>
+                        <div className="text-center">
+                          <span className="text-xs font-bold text-slate-300 block">Upload character illustration</span>
+                          <span className="text-[10px] text-slate-500 font-medium mt-1 block">Support png, jpg, webp</span>
+                        </div>
+                      </>
+                    )}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleCharacterImageUpload}
+                      disabled={uploadingChar}
+                      className="hidden"
+                    />
+                  </label>
+                )}
               </div>
             </div>
 
@@ -526,6 +706,47 @@ const Orders = () => {
                     value={selectedOrder.status}
                     onChange={(val) => handleStatusChange(selectedOrder.id, val)}
                   />
+                </div>
+
+                {/* Canva URL Input */}
+                <div className="mt-6 space-y-2">
+                  <label className="block text-sm font-bold text-slate-200">
+                    Canva Project Link
+                  </label>
+                  <div className="flex gap-2">
+                    <div className="relative flex-1">
+                      <input
+                        type="url"
+                        placeholder="https://www.canva.com/design/..."
+                        value={canvaUrlInput}
+                        onChange={(e) => setCanvaUrlInput(e.target.value)}
+                        className="w-full bg-slate-950/45 border border-slate-800 rounded-2xl px-4 py-3 text-sm outline-none text-slate-200 font-medium placeholder-slate-600 transition-all focus:border-sky-500 focus:shadow-[0_0_0_4px_rgba(56,189,248,0.15)]"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      disabled={savingCanva || canvaUrlInput === (selectedOrder.canva_url || '')}
+                      onClick={handleSaveCanvaUrl}
+                      className="px-4 bg-slate-800 hover:bg-primary-600 disabled:bg-slate-850 hover:text-white text-primary-400 disabled:text-slate-600 rounded-2xl border border-slate-800 hover:border-primary-500/30 transition-all font-bold text-xs flex items-center justify-center shrink-0 cursor-pointer disabled:cursor-not-allowed"
+                    >
+                      {savingCanva ? (
+                        <Loader className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Save className="w-4 h-4" />
+                      )}
+                    </button>
+                    {selectedOrder.canva_url && (
+                      <a
+                        href={selectedOrder.canva_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="px-4 bg-purple-650/15 hover:bg-purple-600 border border-purple-550/20 text-purple-400 hover:text-white rounded-2xl transition-all font-bold text-xs flex items-center justify-center shrink-0 cursor-pointer"
+                        title="Open Canva Project"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -593,17 +814,17 @@ const Orders = () => {
       )}
 
       {/* Image Zoom */}
-      {zoomImage && selectedOrder && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90" onClick={() => setZoomImage(false)}>
+      {zoomImageSrc && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90" onClick={() => setZoomImageSrc(null)}>
           <button 
             className="absolute top-4 right-4 p-3 bg-slate-900 hover:bg-slate-800 text-white rounded-full cursor-pointer"
-            onClick={() => setZoomImage(false)}
+            onClick={() => setZoomImageSrc(null)}
           >
             <X className="w-6 h-6" />
           </button>
           <img
-            src={selectedOrder.image_url}
-            alt={selectedOrder.kid_name}
+            src={zoomImageSrc}
+            alt="Zoomed"
             className="max-w-full max-h-[90vh] object-contain rounded-2xl shadow-2xl border-2 border-slate-800"
           />
         </div>
