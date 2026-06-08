@@ -94,14 +94,14 @@ const Dashboard = () => {
   // Story translation helper
   const translateStory = (story) => {
     const storiesMapping = {
-      'doctor': 'Little Doctor 🩺',
-      'astronaut': 'Space Astronaut 🚀',
-      'engineer': 'Creative Engineer 🏗️',
-      'teacher': 'Role Model Teacher 🍎',
-      'chef': 'Master Chef 🍳',
-      'pilot': 'Brave Pilot ✈️',
-      'artist': 'Talented Artist 🎨',
-      'writer': 'Little Writer 📝'
+      'doctor': 'Little Doctor',
+      'astronaut': 'Space Astronaut',
+      'engineer': 'Creative Engineer',
+      'teacher': 'Role Model Teacher',
+      'chef': 'Master Chef',
+      'pilot': 'Brave Pilot',
+      'artist': 'Talented Artist',
+      'writer': 'Little Writer'
     };
     return storiesMapping[story] || story;
   };

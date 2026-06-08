@@ -115,14 +115,14 @@ const Orders = () => {
   // Story translation helper
   const translateStory = (story) => {
     const storiesMapping = {
-      'doctor': 'Little Doctor 🩺',
-      'astronaut': 'Space Astronaut 🚀',
-      'engineer': 'Creative Engineer 🏗️',
-      'teacher': 'Role Model Teacher 🍎',
-      'chef': 'Master Chef 🍳',
-      'pilot': 'Brave Pilot ✈️',
-      'artist': 'Talented Artist 🎨',
-      'writer': 'Little Writer 📝'
+      'doctor': 'Little Doctor',
+      'astronaut': 'Space Astronaut',
+      'engineer': 'Creative Engineer',
+      'teacher': 'Role Model Teacher',
+      'chef': 'Master Chef',
+      'pilot': 'Brave Pilot',
+      'artist': 'Talented Artist',
+      'writer': 'Little Writer'
     };
     return storiesMapping[story] || story;
   };
@@ -256,11 +256,11 @@ const Orders = () => {
                           statusBadges[order.status]?.class
                         }`}
                       >
-                        <option value="pending">⏳ Pending</option>
-                        <option value="img_confiremed">🖼️ Image Confirmed</option>
-                        <option value="in delivery">📦 In Delivery</option>
-                        <option value="paid">✅ Paid</option>
-                        <option value="cancelled">❌ Cancelled</option>
+                        <option value="pending">Pending</option>
+                        <option value="img_confiremed">Image Confirmed</option>
+                        <option value="in delivery">In Delivery</option>
+                        <option value="paid">Paid</option>
+                        <option value="cancelled">Cancelled</option>
                       </select>
                     </td>
                     <td className="py-4 px-6 text-right">
@@ -394,11 +394,11 @@ const Orders = () => {
                       statusBadges[selectedOrder.status]?.class
                     }`}
                   >
-                    <option value="pending">⏳ Pending</option>
-                    <option value="img_confiremed">🖼️ Image Confirmed</option>
-                    <option value="in delivery">📦 In Delivery</option>
-                    <option value="paid">✅ Paid</option>
-                    <option value="cancelled">❌ Cancelled</option>
+                    <option value="pending">Pending</option>
+                    <option value="img_confiremed">Image Confirmed</option>
+                    <option value="in delivery">In Delivery</option>
+                    <option value="paid">Paid</option>
+                    <option value="cancelled">Cancelled</option>
                   </select>
                 </div>
               </div>
