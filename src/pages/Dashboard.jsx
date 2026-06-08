@@ -115,10 +115,12 @@ const Dashboard = () => {
     in_preparation: { label: 'In Preparation', class: 'bg-orange-50 text-orange-700 border-orange-200' },
     in_delivery: { label: 'In Delivery', class: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
     paid: { label: 'Paid', class: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-    routeur: { label: 'Router', class: 'bg-purple-50 text-purple-700 border-purple-200' },
+    returned: { label: 'Returned', class: 'bg-purple-50 text-purple-700 border-purple-200' },
     // Backwards compatibility with old DB values
     img_confiremed: { label: 'Image Confirmed', class: 'bg-sky-50 text-sky-700 border-sky-200' },
     'in delivery': { label: 'In Delivery', class: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
+    routeur: { label: 'Returned', class: 'bg-purple-50 text-purple-700 border-purple-200' },
+    return: { label: 'Returned', class: 'bg-purple-50 text-purple-700 border-purple-200' },
   };
 
   return (

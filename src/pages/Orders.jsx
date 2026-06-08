@@ -40,12 +40,13 @@ const StatusDropdown = ({ value, onChange, disabled, size = 'md' }) => {
     { value: 'in_preparation', label: 'In Preparation', icon: Package, color: 'text-orange-500' },
     { value: 'in_delivery', label: 'In Delivery', icon: Truck, color: 'text-indigo-500' },
     { value: 'paid', label: 'Paid', icon: CheckCircle, color: 'text-emerald-500' },
-    { value: 'return', label: 'Returned', icon: MapPin, color: 'text-purple-500' },
+    { value: 'returned', label: 'Returned', icon: MapPin, color: 'text-purple-500' },
   ];
 
   let currentKey = value;
   if (value === 'in delivery') currentKey = 'in_delivery';
   if (value === 'img_confiremed') currentKey = 'img_confieremed';
+  if (value === 'return' || value === 'routeur') currentKey = 'returned';
 
   const current = statuses.find(s => s.value === currentKey) || statuses[0];
   const CurrentIcon = current.icon;
@@ -361,10 +362,12 @@ const Orders = () => {
     in_preparation: { label: 'In Preparation', class: 'bg-orange-50 text-orange-700 border-orange-200' },
     in_delivery: { label: 'In Delivery', class: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
     paid: { label: 'Paid', class: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-    routeur: { label: 'Router', class: 'bg-purple-50 text-purple-700 border-purple-200' },
+    returned: { label: 'Returned', class: 'bg-purple-50 text-purple-700 border-purple-200' },
     // Backwards compatibility with old DB values
     img_confiremed: { label: 'Image Confirmed', class: 'bg-sky-50 text-sky-700 border-sky-200' },
     'in delivery': { label: 'In Delivery', class: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
+    routeur: { label: 'Returned', class: 'bg-purple-50 text-purple-700 border-purple-200' },
+    return: { label: 'Returned', class: 'bg-purple-50 text-purple-700 border-purple-200' },
   };
 
   // Filter & Search computation
@@ -378,7 +381,8 @@ const Orders = () => {
       statusFilter === 'all' ||
       order.status === statusFilter ||
       (statusFilter === 'in_delivery' && order.status === 'in delivery') ||
-      (statusFilter === 'img_confieremed' && order.status === 'img_confiremed');
+      (statusFilter === 'img_confieremed' && order.status === 'img_confiremed') ||
+      (statusFilter === 'returned' && (order.status === 'return' || order.status === 'routeur'));
 
     return matchesSearch && matchesStatus;
   });
@@ -416,7 +420,7 @@ const Orders = () => {
             { value: 'in_preparation', label: 'In Preparation' },
             { value: 'in_delivery', label: 'In Delivery' },
             { value: 'paid', label: 'Paid' },
-            { value: 'routeur', label: 'Router' },
+            { value: 'returned', label: 'Returned' },
           ].map(tab => (
             <button
               key={tab.value}
