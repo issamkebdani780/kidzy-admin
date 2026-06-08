@@ -131,7 +131,7 @@ const Orders = () => {
   const statusBadges = {
     pending: { label: 'Pending', class: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/25' },
     img_confiremed: { label: 'Image Confirmed', class: 'bg-blue-500/10 text-blue-400 border-blue-500/25' },
-    'in delivery': { label: 'In Delivery', class: 'bg-purple-500/10 text-purple-400 border-purple-500/25' },
+    in_delivery: { label: 'In Delivery', class: 'bg-purple-500/10 text-purple-400 border-purple-500/25' },
     paid: { label: 'Paid', class: 'bg-green-500/10 text-green-400 border-green-500/25' },
     cancelled: { label: 'Cancelled', class: 'bg-red-500/10 text-red-400 border-red-500/25' },
   };
@@ -272,15 +272,6 @@ const Orders = () => {
                         >
                           <Eye className="w-4 h-4" />
                         </button>
-                        <a
-                          href={formatWhatsAppLink(order.phone, order.kid_name, order.story_type)}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="p-2 bg-slate-800 hover:bg-green-600 hover:text-white text-green-400 rounded-xl transition-colors cursor-pointer"
-                          title="WhatsApp Chat"
-                        >
-                          <MessageSquare className="w-4 h-4" />
-                        </a>
                         <button
                           onClick={() => { setDeleteId(order.id); setDeleteConfirmOpen(true); }}
                           className="p-2 bg-slate-800 hover:bg-red-600 hover:text-white text-red-400 rounded-xl transition-colors cursor-pointer"

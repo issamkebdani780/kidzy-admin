@@ -108,3 +108,10 @@ export const deleteMessage = async (id) => {
     method: 'DELETE',
   });
 };
+
+export const viewMessage = async (id) => {
+  return fetchWithAuth(`/api/contact/${id}/view`, {
+    method: 'PUT',
+  });
+};
+

@@ -7,9 +7,10 @@ import {
   Loader, 
   User, 
   Clock,
-  Sparkles
+  Sparkles,
+  Check
 } from 'lucide-react';
-import { getMessages, deleteMessage } from '../services/api';
+import { getMessages, deleteMessage, viewMessage } from '../services/api';
 
 const Messages = () => {
   const [messages, setMessages] = useState([]);
@@ -55,6 +56,20 @@ const Messages = () => {
     }
   };
 
+  const handleMarkViewed = async (id) => {
+    try {
+      await viewMessage(id);
+      setMessages(prev => prev.map(m => m.id === id ? { ...m, is_viewed: 1 } : m));
+    } catch (err) {
+      console.error('Failed to mark message as read:', err);
+    }
+  };
+
+  const handleWhatsAppClick = (id, phone, name) => {
+    handleMarkViewed(id);
+    window.open(formatWhatsAppLink(phone, name), '_blank', 'noreferrer');
+  };
+
   const formatWhatsAppLink = (phone, name) => {
     let cleanPhone = phone.replace(/[^\d]/g, '');
     if (cleanPhone.startsWith('0')) {
@@ -98,72 +113,96 @@ const Messages = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {messages.map((msg) => (
-            <div 
-              key={msg.id} 
-              className="bg-slate-900 border border-slate-800 rounded-[2.5rem] p-6 md:p-8 flex flex-col justify-between hover:border-primary-500/30 transition-all duration-300 shadow-xl"
-            >
-              <div>
-                {/* Message Header */}
-                <div className="flex items-start justify-between gap-3 border-b border-slate-850 pb-4 mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-primary-500/10 border border-primary-500/15 flex items-center justify-center text-primary-400">
-                      <User className="w-5 h-5" />
+          {messages.map((msg) => {
+            const isUnread = msg.is_viewed === 0;
+            return (
+              <div 
+                key={msg.id} 
+                className={`bg-slate-900 border rounded-[2.5rem] p-6 md:p-8 flex flex-col justify-between hover:border-primary-500/30 transition-all duration-300 shadow-xl ${
+                  isUnread ? 'border-slate-800 ring-2 ring-primary-500/10' : 'border-slate-800 opacity-80'
+                }`}
+              >
+                <div>
+                  {/* Message Header */}
+                  <div className="flex items-start justify-between gap-3 border-b border-slate-850 pb-4 mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
+                        isUnread 
+                          ? 'bg-primary-500/10 border border-primary-500/30 text-primary-400' 
+                          : 'bg-slate-850 border border-slate-800 text-slate-500'
+                      }`}>
+                        <User className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-extrabold text-white text-base leading-snug">{msg.name}</h3>
+                          {isUnread && (
+                            <span className="px-2 py-0.5 text-[10px] font-bold bg-primary-500/25 border border-primary-500/35 text-primary-300 rounded-full animate-pulse">
+                              New
+                            </span>
+                          )}
+                        </div>
+                        <a 
+                          href={`tel:${msg.phone}`}
+                          className="text-xs text-slate-400 hover:text-primary-400 flex items-center gap-1.5 mt-1 font-bold"
+                        >
+                          <Phone className="w-3.5 h-3.5" />
+                          <span>{msg.phone}</span>
+                        </a>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="font-extrabold text-white text-base leading-snug">{msg.name}</h3>
-                      <a 
-                        href={`tel:${msg.phone}`}
-                        className="text-xs text-slate-400 hover:text-primary-400 flex items-center gap-1.5 mt-1 font-bold"
-                      >
-                        <Phone className="w-3.5 h-3.5" />
-                        <span>{msg.phone}</span>
-                      </a>
+                    <div className="text-xs text-slate-500 font-bold flex items-center gap-1.5 mt-1">
+                      <Clock className="w-3.5 h-3.5" />
+                      <span>
+                        {new Date(msg.created_at).toLocaleDateString('en-US', { 
+                          day: 'numeric', 
+                          month: 'short', 
+                          hour: '2-digit', 
+                          minute: '2-digit' 
+                        })}
+                      </span>
                     </div>
                   </div>
-                  <div className="text-xs text-slate-500 font-bold flex items-center gap-1.5 mt-1">
-                    <Clock className="w-3.5 h-3.5" />
-                    <span>
-                      {new Date(msg.created_at).toLocaleDateString('en-US', { 
-                        day: 'numeric', 
-                        month: 'short', 
-                        hour: '2-digit', 
-                        minute: '2-digit' 
-                      })}
-                    </span>
+
+                  {/* Message Content */}
+                  <div className="bg-slate-950/30 border border-slate-850/40 rounded-2xl p-4 md:p-5 mb-6">
+                    <p className="text-slate-350 text-sm leading-relaxed whitespace-pre-wrap font-medium">
+                      {msg.message}
+                    </p>
                   </div>
                 </div>
 
-                {/* Message Content */}
-                <div className="bg-slate-950/30 border border-slate-850/40 rounded-2xl p-4 md:p-5 mb-6">
-                  <p className="text-slate-350 text-sm leading-relaxed whitespace-pre-wrap font-medium">
-                    {msg.message}
-                  </p>
+                {/* Message Actions */}
+                <div className="flex items-center gap-3 border-t border-slate-850 pt-4 mt-auto">
+                  <button
+                    onClick={() => handleWhatsAppClick(msg.id, msg.phone, msg.name)}
+                    className="flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-2xl text-xs shadow-lg transition-colors cursor-pointer"
+                  >
+                    <MessageSquare className="w-4 h-4" />
+                    <span>Reply on WhatsApp</span>
+                  </button>
+                  
+                  {isUnread && (
+                    <button
+                      onClick={() => handleMarkViewed(msg.id)}
+                      className="p-3 bg-slate-800 hover:bg-primary-600 hover:text-white border border-slate-850 hover:border-transparent text-primary-400 rounded-2xl transition-all cursor-pointer"
+                      title="Mark as Read"
+                    >
+                      <Check className="w-4 h-4" />
+                    </button>
+                  )}
+
+                  <button
+                    onClick={() => { setDeleteId(msg.id); setDeleteConfirmOpen(true); }}
+                    className="p-3 bg-red-500/10 hover:bg-red-650 hover:text-white border border-red-500/10 hover:border-transparent text-red-400 rounded-2xl transition-all cursor-pointer"
+                    title="Delete Message"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
-
-              {/* Message Actions */}
-              <div className="flex items-center gap-3 border-t border-slate-850 pt-4 mt-auto">
-                <a
-                  href={formatWhatsAppLink(msg.phone, msg.name)}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-2xl text-xs shadow-lg transition-colors cursor-pointer"
-                >
-                  <MessageSquare className="w-4 h-4" />
-                  <span>Reply on WhatsApp</span>
-                </a>
-                
-                <button
-                  onClick={() => { setDeleteId(msg.id); setDeleteConfirmOpen(true); }}
-                  className="p-3 bg-red-500/10 hover:bg-red-650 hover:text-white border border-red-500/10 hover:border-transparent text-red-400 rounded-2xl transition-all cursor-pointer"
-                  title="Delete Message"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
