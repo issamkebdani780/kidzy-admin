@@ -40,7 +40,7 @@ const StatusDropdown = ({ value, onChange, disabled, size = 'md' }) => {
     { value: 'in_preparation', label: 'In Preparation', icon: Package, color: 'text-orange-500' },
     { value: 'in_delivery', label: 'In Delivery', icon: Truck, color: 'text-indigo-500' },
     { value: 'paid', label: 'Paid', icon: CheckCircle, color: 'text-emerald-500' },
-    { value: 'routeur', label: 'Router', icon: MapPin, color: 'text-purple-500' },
+    { value: 'return', label: 'Returned', icon: MapPin, color: 'text-purple-500' },
   ];
 
   let currentKey = value;
