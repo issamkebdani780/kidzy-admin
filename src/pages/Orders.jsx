@@ -20,7 +20,10 @@ import {
   XCircle,
   Upload,
   ExternalLink,
-  Save
+  Save,
+  PhoneOff,
+  Package,
+  MapPin
 } from 'lucide-react';
 import { getOrders, updateOrderStatus, deleteOrder, getOrderHistory, updateOrderDetails } from '../services/api';
 
@@ -30,13 +33,20 @@ const StatusDropdown = ({ value, onChange, disabled, size = 'md' }) => {
 
   const statuses = [
     { value: 'pending', label: 'Pending', icon: Clock, color: 'text-amber-500' },
-    { value: 'img_confiremed', label: 'Image Confirmed', icon: Image, color: 'text-sky-500' },
+    { value: 'confiremed', label: 'Confirmed', icon: CheckCircle, color: 'text-blue-500' },
+    { value: 'cancelled', label: 'Cancelled', icon: XCircle, color: 'text-rose-500' },
+    { value: 'no answer', label: 'No Answer', icon: PhoneOff, color: 'text-slate-400' },
+    { value: 'img_confieremed', label: 'Image Confirmed', icon: Image, color: 'text-sky-500' },
+    { value: 'in_preparation', label: 'In Preparation', icon: Package, color: 'text-orange-500' },
     { value: 'in_delivery', label: 'In Delivery', icon: Truck, color: 'text-indigo-500' },
     { value: 'paid', label: 'Paid', icon: CheckCircle, color: 'text-emerald-500' },
-    { value: 'cancelled', label: 'Cancelled', icon: XCircle, color: 'text-rose-500' },
+    { value: 'routeur', label: 'Router', icon: MapPin, color: 'text-purple-500' },
   ];
 
-  const currentKey = value === 'in delivery' ? 'in_delivery' : value;
+  let currentKey = value;
+  if (value === 'in delivery') currentKey = 'in_delivery';
+  if (value === 'img_confiremed') currentKey = 'img_confieremed';
+
   const current = statuses.find(s => s.value === currentKey) || statuses[0];
   const CurrentIcon = current.icon;
 
@@ -109,8 +119,7 @@ const StatusDropdown = ({ value, onChange, disabled, size = 'md' }) => {
                 key={s.value}
                 type="button"
                 onClick={() => {
-                  const nextValue = s.value === 'in_delivery' ? 'in delivery' : s.value;
-                  onChange(nextValue);
+                  onChange(s.value);
                   setIsOpen(false);
                 }}
                 className={`w-full flex items-center justify-between hover:bg-slate-50 font-semibold transition-colors cursor-pointer text-left ${itemPadding} ${isSelected ? 'bg-slate-50 text-slate-900 font-bold' : 'text-slate-600'
@@ -345,10 +354,17 @@ const Orders = () => {
   // Status badges definitions
   const statusBadges = {
     pending: { label: 'Pending', class: 'bg-amber-50 text-amber-700 border-amber-200' },
-    img_confiremed: { label: 'Image Confirmed', class: 'bg-sky-50 text-sky-700 border-sky-200' },
+    confiremed: { label: 'Confirmed', class: 'bg-blue-50 text-blue-700 border-blue-200' },
+    cancelled: { label: 'Cancelled', class: 'bg-rose-50 text-rose-700 border-rose-200' },
+    'no answer': { label: 'No Answer', class: 'bg-slate-50 text-slate-700 border-slate-200' },
+    img_confieremed: { label: 'Image Confirmed', class: 'bg-sky-50 text-sky-700 border-sky-200' },
+    in_preparation: { label: 'In Preparation', class: 'bg-orange-50 text-orange-700 border-orange-200' },
     in_delivery: { label: 'In Delivery', class: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
     paid: { label: 'Paid', class: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-    cancelled: { label: 'Cancelled', class: 'bg-rose-50 text-rose-700 border-rose-200' },
+    routeur: { label: 'Router', class: 'bg-purple-50 text-purple-700 border-purple-200' },
+    // Backwards compatibility with old DB values
+    img_confiremed: { label: 'Image Confirmed', class: 'bg-sky-50 text-sky-700 border-sky-200' },
+    'in delivery': { label: 'In Delivery', class: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
   };
 
   // Filter & Search computation
@@ -360,7 +376,9 @@ const Orders = () => {
 
     const matchesStatus =
       statusFilter === 'all' ||
-      order.status === statusFilter;
+      order.status === statusFilter ||
+      (statusFilter === 'in_delivery' && order.status === 'in delivery') ||
+      (statusFilter === 'img_confieremed' && order.status === 'img_confiremed');
 
     return matchesSearch && matchesStatus;
   });
@@ -391,10 +409,14 @@ const Orders = () => {
           {[
             { value: 'all', label: 'All' },
             { value: 'pending', label: 'Pending' },
-            { value: 'img_confiremed', label: 'Image Confirmed' },
-            { value: 'in delivery', label: 'In Delivery' },
-            { value: 'paid', label: 'Paid' },
+            { value: 'confiremed', label: 'Confirmed' },
             { value: 'cancelled', label: 'Cancelled' },
+            { value: 'no answer', label: 'No Answer' },
+            { value: 'img_confieremed', label: 'Image Confirmed' },
+            { value: 'in_preparation', label: 'In Preparation' },
+            { value: 'in_delivery', label: 'In Delivery' },
+            { value: 'paid', label: 'Paid' },
+            { value: 'routeur', label: 'Router' },
           ].map(tab => (
             <button
               key={tab.value}
