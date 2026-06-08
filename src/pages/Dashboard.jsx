@@ -18,9 +18,9 @@ const Dashboard = () => {
   const [stats, setStats] = useState({
     totalOrders: 0,
     pendingOrders: 0,
-    processingOrders: 0,
-    deliveredOrders: 0,
-    cancelledOrders: 0,
+    imgConfirmedOrders: 0,
+    inDeliveryOrders: 0,
+    paidOrders: 0,
     totalMessages: 0,
   });
   const [recentOrders, setRecentOrders] = useState([]);
@@ -38,16 +38,16 @@ const Dashboard = () => {
         const totalOrders = ordersRes.total || orders.length;
 
         let pending = 0;
-        let processing = 0;
-        let delivered = 0;
-        let cancelled = 0;
+        let imgConfirmed = 0;
+        let inDelivery = 0;
+        let paid = 0;
         const stories = {};
 
         orders.forEach(order => {
           if (order.status === 'pending') pending++;
-          else if (order.status === 'processing' || order.status === 'shipped') processing++;
-          else if (order.status === 'delivered') delivered++;
-          else if (order.status === 'cancelled') cancelled++;
+          else if (order.status === 'img_confiremed') imgConfirmed++;
+          else if (order.status === 'in delivery') inDelivery++;
+          else if (order.status === 'paid' || order.status === 'piad') paid++;
 
           if (order.story_type) {
             stories[order.story_type] = (stories[order.story_type] || 0) + 1;
@@ -57,9 +57,9 @@ const Dashboard = () => {
         setStats({
           totalOrders,
           pendingOrders: pending,
-          processingOrders: processing,
-          deliveredOrders: delivered,
-          cancelledOrders: cancelled,
+          imgConfirmedOrders: imgConfirmed,
+          inDeliveryOrders: inDelivery,
+          paidOrders: paid,
           totalMessages: messagesRes.contacts ? messagesRes.contacts.length : 0
         });
 
@@ -104,10 +104,10 @@ const Dashboard = () => {
 
   const statusBadges = {
     pending: { label: 'Pending', class: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20' },
-    processing: { label: 'Processing', class: 'bg-blue-500/10 text-blue-400 border-blue-500/20' },
-    shipped: { label: 'Shipped', class: 'bg-purple-500/10 text-purple-400 border-purple-500/20' },
-    delivered: { label: 'Delivered', class: 'bg-green-500/10 text-green-400 border-green-500/20' },
-    cancelled: { label: 'Cancelled', class: 'bg-red-500/10 text-red-400 border-red-500/20' },
+    img_confiremed: { label: 'Image Confirmed', class: 'bg-blue-500/10 text-blue-400 border-blue-500/20' },
+    'in delivery': { label: 'In Delivery', class: 'bg-purple-500/10 text-purple-400 border-purple-500/20' },
+    paid: { label: 'Paid', class: 'bg-green-500/10 text-green-400 border-green-500/20' },
+    piad: { label: 'Paid', class: 'bg-green-500/10 text-green-400 border-green-500/20' },
   };
 
   return (
@@ -138,9 +138,9 @@ const Dashboard = () => {
         {[
           { label: 'Total Orders', value: stats.totalOrders, icon: ShoppingBag, color: 'text-primary-400 bg-primary-500/10 border-primary-500/10' },
           { label: 'Pending Review', value: stats.pendingOrders, icon: Clock, color: 'text-yellow-400 bg-yellow-500/10 border-yellow-500/10' },
-          { label: 'In Progress / Shipped', value: stats.processingOrders, icon: Activity, color: 'text-blue-400 bg-blue-500/10 border-blue-500/10' },
-          { label: 'Delivered', value: stats.deliveredOrders, icon: CheckCircle, color: 'text-green-400 bg-green-500/10 border-green-500/10' },
-          { label: 'Support Messages', value: stats.totalMessages, icon: Mail, color: 'text-purple-400 bg-purple-500/10 border-purple-500/10' },
+          { label: 'Image Confirmed', value: stats.imgConfirmedOrders, icon: Activity, color: 'text-blue-400 bg-blue-500/10 border-blue-500/10' },
+          { label: 'In Delivery', value: stats.inDeliveryOrders, icon: Activity, color: 'text-purple-400 bg-purple-500/10 border-purple-500/10' },
+          { label: 'Paid Orders', value: stats.paidOrders, icon: CheckCircle, color: 'text-green-400 bg-green-500/10 border-green-500/10' },
         ].map((card, idx) => (
           <div key={idx} className="p-6 bg-slate-900 rounded-[2rem] border border-slate-800 flex items-center justify-between shadow-xl">
             <div>

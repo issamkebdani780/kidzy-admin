@@ -130,10 +130,10 @@ const Orders = () => {
   // Status badges definitions
   const statusBadges = {
     pending: { label: 'Pending', class: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/25' },
-    processing: { label: 'Processing', class: 'bg-blue-500/10 text-blue-400 border-blue-500/25' },
-    shipped: { label: 'Shipped', class: 'bg-purple-500/10 text-purple-400 border-purple-500/25' },
-    delivered: { label: 'Delivered', class: 'bg-green-500/10 text-green-400 border-green-500/25' },
-    cancelled: { label: 'Cancelled', class: 'bg-red-500/10 text-red-400 border-red-500/25' },
+    img_confiremed: { label: 'Image Confirmed', class: 'bg-blue-500/10 text-blue-400 border-blue-500/25' },
+    'in delivery': { label: 'In Delivery', class: 'bg-purple-500/10 text-purple-400 border-purple-500/25' },
+    paid: { label: 'Paid', class: 'bg-green-500/10 text-green-400 border-green-500/25' },
+    piad: { label: 'Paid', class: 'bg-green-500/10 text-green-400 border-green-500/25' },
   };
 
   // Filter & Search computation
@@ -176,10 +176,9 @@ const Orders = () => {
           {[
             { value: 'all', label: 'All' },
             { value: 'pending', label: 'Pending' },
-            { value: 'processing', label: 'Processing' },
-            { value: 'shipped', label: 'Shipped' },
-            { value: 'delivered', label: 'Delivered' },
-            { value: 'cancelled', label: 'Cancelled' },
+            { value: 'img_confiremed', label: 'Image Confirmed' },
+            { value: 'in delivery', label: 'In Delivery' },
+            { value: 'paid', label: 'Paid' },
           ].map(tab => (
             <button
               key={tab.value}
@@ -257,10 +256,10 @@ const Orders = () => {
                         }`}
                       >
                         <option value="pending">⏳ Pending</option>
-                        <option value="processing">⚙️ Processing</option>
-                        <option value="shipped">📦 Shipped</option>
-                        <option value="delivered">✅ Delivered</option>
-                        <option value="cancelled">❌ Cancelled</option>
+                        <option value="img_confiremed">🖼️ Image Confirmed</option>
+                        <option value="in delivery">📦 In Delivery</option>
+                        <option value="paid">✅ Paid</option>
+                        <option value="piad">✅ Paid (Typo)</option>
                       </select>
                     </td>
                     <td className="py-4 px-6 text-right">
@@ -395,10 +394,10 @@ const Orders = () => {
                     }`}
                   >
                     <option value="pending">⏳ Pending</option>
-                    <option value="processing">⚙️ Processing</option>
-                    <option value="shipped">📦 Shipped</option>
-                    <option value="delivered">✅ Delivered</option>
-                    <option value="cancelled">❌ Cancelled</option>
+                    <option value="img_confiremed">🖼️ Image Confirmed</option>
+                    <option value="in delivery">📦 In Delivery</option>
+                    <option value="paid">✅ Paid</option>
+                    <option value="piad">✅ Paid (Typo)</option>
                   </select>
                 </div>
               </div>
