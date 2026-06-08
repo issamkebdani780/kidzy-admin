@@ -21,6 +21,7 @@ const Dashboard = () => {
     imgConfirmedOrders: 0,
     inDeliveryOrders: 0,
     paidOrders: 0,
+    cancelledOrders: 0,
     totalMessages: 0,
   });
   const [recentOrders, setRecentOrders] = useState([]);
@@ -41,13 +42,15 @@ const Dashboard = () => {
         let imgConfirmed = 0;
         let inDelivery = 0;
         let paid = 0;
+        let cancelled = 0;
         const stories = {};
 
         orders.forEach(order => {
           if (order.status === 'pending') pending++;
           else if (order.status === 'img_confiremed') imgConfirmed++;
           else if (order.status === 'in delivery') inDelivery++;
-          else if (order.status === 'paid' || order.status === 'piad') paid++;
+          else if (order.status === 'paid') paid++;
+          else if (order.status === 'cancelled') cancelled++;
 
           if (order.story_type) {
             stories[order.story_type] = (stories[order.story_type] || 0) + 1;
@@ -60,6 +63,7 @@ const Dashboard = () => {
           imgConfirmedOrders: imgConfirmed,
           inDeliveryOrders: inDelivery,
           paidOrders: paid,
+          cancelledOrders: cancelled,
           totalMessages: messagesRes.contacts ? messagesRes.contacts.length : 0
         });
 
@@ -107,7 +111,7 @@ const Dashboard = () => {
     img_confiremed: { label: 'Image Confirmed', class: 'bg-blue-500/10 text-blue-400 border-blue-500/20' },
     'in delivery': { label: 'In Delivery', class: 'bg-purple-500/10 text-purple-400 border-purple-500/20' },
     paid: { label: 'Paid', class: 'bg-green-500/10 text-green-400 border-green-500/20' },
-    piad: { label: 'Paid', class: 'bg-green-500/10 text-green-400 border-green-500/20' },
+    cancelled: { label: 'Cancelled', class: 'bg-red-500/10 text-red-400 border-red-500/20' },
   };
 
   return (

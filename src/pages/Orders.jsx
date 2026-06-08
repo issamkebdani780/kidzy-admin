@@ -133,7 +133,7 @@ const Orders = () => {
     img_confiremed: { label: 'Image Confirmed', class: 'bg-blue-500/10 text-blue-400 border-blue-500/25' },
     'in delivery': { label: 'In Delivery', class: 'bg-purple-500/10 text-purple-400 border-purple-500/25' },
     paid: { label: 'Paid', class: 'bg-green-500/10 text-green-400 border-green-500/25' },
-    piad: { label: 'Paid', class: 'bg-green-500/10 text-green-400 border-green-500/25' },
+    cancelled: { label: 'Cancelled', class: 'bg-red-500/10 text-red-400 border-red-500/25' },
   };
 
   // Filter & Search computation
@@ -179,6 +179,7 @@ const Orders = () => {
             { value: 'img_confiremed', label: 'Image Confirmed' },
             { value: 'in delivery', label: 'In Delivery' },
             { value: 'paid', label: 'Paid' },
+            { value: 'cancelled', label: 'Cancelled' },
           ].map(tab => (
             <button
               key={tab.value}
@@ -259,7 +260,7 @@ const Orders = () => {
                         <option value="img_confiremed">🖼️ Image Confirmed</option>
                         <option value="in delivery">📦 In Delivery</option>
                         <option value="paid">✅ Paid</option>
-                        <option value="piad">✅ Paid (Typo)</option>
+                        <option value="cancelled">❌ Cancelled</option>
                       </select>
                     </td>
                     <td className="py-4 px-6 text-right">
@@ -397,7 +398,7 @@ const Orders = () => {
                     <option value="img_confiremed">🖼️ Image Confirmed</option>
                     <option value="in delivery">📦 In Delivery</option>
                     <option value="paid">✅ Paid</option>
-                    <option value="piad">✅ Paid (Typo)</option>
+                    <option value="cancelled">❌ Cancelled</option>
                   </select>
                 </div>
               </div>
