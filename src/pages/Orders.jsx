@@ -115,13 +115,13 @@ const Orders = () => {
   // Story translation helper
   const translateStory = (story) => {
     const storiesMapping = {
-      'doctor': 'Little Doctor',
-      'astronaut': 'Space Astronaut',
-      'engineer': 'Creative Engineer',
-      'teacher': 'Role Model Teacher',
-      'chef': 'Master Chef',
-      'pilot': 'Brave Pilot',
-      'artist': 'Talented Artist',
+      'doctor': 'Doctor',
+      'astronaut': 'Astronaut',
+      'engineer': 'Engineer',
+      'teacher': 'Teacher',
+      'chef': 'Chef',
+      'pilot': 'Pilot',
+      'artist': 'Artist',
       'writer': 'Little Writer'
     };
     return storiesMapping[story] || story;
