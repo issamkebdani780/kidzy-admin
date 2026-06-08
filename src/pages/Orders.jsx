@@ -519,7 +519,9 @@ const Orders = () => {
 
                 {/* Status selector */}
                 <div className="mt-6 space-y-2">
-                  <label className="block text-xs font-bold text-slate-500">Current Order Status</label>
+                  <label className="block text-sm font-bold text-slate-200">
+                    Order Status <span className="text-sky-400">*</span>
+                  </label>
                   <StatusDropdown
                     value={selectedOrder.status}
                     onChange={(val) => handleStatusChange(selectedOrder.id, val)}
