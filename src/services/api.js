@@ -96,6 +96,11 @@ export const deleteOrder = async (id) => {
   });
 };
 
+export const getOrderHistory = async (id) => {
+  return fetchWithAuth(`/api/orders/${id}/history`);
+};
+
+
 // ─────────────────────────────────────────────
 // Messages Service
 // ─────────────────────────────────────────────

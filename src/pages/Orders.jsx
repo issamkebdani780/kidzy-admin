@@ -12,13 +12,17 @@ import {
   Calendar,
   Sparkles
 } from 'lucide-react';
-import { getOrders, updateOrderStatus, deleteOrder } from '../services/api';
+import { getOrders, updateOrderStatus, deleteOrder, getOrderHistory } from '../services/api';
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState(null);
   const [error, setError] = useState('');
+  
+  // History State
+  const [orderHistory, setOrderHistory] = useState([]);
+  const [loadingHistory, setLoadingHistory] = useState(false);
   
   // Pagination
   const [page, setPage] = useState(1);
@@ -57,6 +61,28 @@ const Orders = () => {
     fetchOrdersData();
   }, [page]);
 
+  // Fetch status history when order details modal is opened
+  useEffect(() => {
+    if (selectedOrder) {
+      const fetchHistory = async () => {
+        try {
+          setLoadingHistory(true);
+          const res = await getOrderHistory(selectedOrder.id);
+          if (res.success) {
+            setOrderHistory(res.history || []);
+          }
+        } catch (err) {
+          console.error('Failed to load history:', err);
+        } finally {
+          setLoadingHistory(false);
+        }
+      };
+      fetchHistory();
+    } else {
+      setOrderHistory([]);
+    }
+  }, [selectedOrder]);
+
   // Handle status update
   const handleStatusChange = async (id, newStatus) => {
     try {
@@ -66,6 +92,15 @@ const Orders = () => {
         setOrders(prev => prev.map(o => o.id === id ? { ...o, status: newStatus } : o));
         if (selectedOrder && selectedOrder.id === id) {
           setSelectedOrder(prev => ({ ...prev, status: newStatus }));
+          // Refresh status history
+          try {
+            const histRes = await getOrderHistory(id);
+            if (histRes.success) {
+              setOrderHistory(histRes.history || []);
+            }
+          } catch (histErr) {
+            console.error('Failed to reload order history:', histErr);
+          }
         }
       }
     } catch (err) {
@@ -317,7 +352,7 @@ const Orders = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setSelectedOrder(null)}></div>
           
-          <div className="bg-slate-900 border border-slate-800 w-full max-w-2xl rounded-[2.5rem] p-6 md:p-8 z-10 relative shadow-2xl flex flex-col md:flex-row gap-6 max-h-[90vh] overflow-y-auto">
+          <div className="bg-slate-900 border border-slate-800 w-full max-w-5xl rounded-[2.5rem] p-6 md:p-8 z-10 relative shadow-2xl flex flex-col lg:flex-row gap-6 max-h-[90vh] overflow-y-auto">
             <button
               onClick={() => setSelectedOrder(null)}
               className="absolute top-4 right-4 p-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl cursor-pointer"
@@ -325,8 +360,8 @@ const Orders = () => {
               <X className="w-5 h-5" />
             </button>
 
-            {/* Image Preview */}
-            <div className="w-full md:w-1/2 flex flex-col items-start">
+            {/* Image Preview (Left Column) */}
+            <div className="w-full lg:w-1/3 flex flex-col items-start">
               <h3 className="text-slate-400 text-xs font-bold mb-3">Child Photo</h3>
               <div 
                 className="w-full aspect-[4/3] md:aspect-square bg-slate-950 rounded-2xl overflow-hidden border border-slate-800 relative group cursor-pointer"
@@ -343,8 +378,8 @@ const Orders = () => {
               </div>
             </div>
 
-            {/* Information details */}
-            <div className="w-full md:w-1/2 flex flex-col justify-between">
+            {/* Information details (Middle Column) */}
+            <div className="w-full lg:w-1/3 flex flex-col justify-between lg:border-r border-slate-800 lg:pr-6">
               <div>
                 <span className="text-xs font-bold px-3 py-1 bg-slate-800 text-slate-300 rounded-full">
                   Order #{selectedOrder.id}
@@ -407,13 +442,51 @@ const Orders = () => {
                 </a>
                 <button
                   onClick={() => { setDeleteId(selectedOrder.id); setDeleteConfirmOpen(true); }}
-                  className="p-3.5 bg-red-500/10 hover:bg-red-600 text-red-400 hover:text-white rounded-2xl transition-colors cursor-pointer"
+                  className="p-3.5 bg-red-500/10 hover:bg-red-650 hover:text-white rounded-2xl transition-colors cursor-pointer"
                   title="Delete Order Permanently"
                 >
                   <Trash2 className="w-5 h-5" />
                 </button>
               </div>
+            </div>
 
+            {/* Order History Timeline (Right Column) */}
+            <div className="w-full lg:w-1/3 flex flex-col lg:border-r border-slate-800 lg:pr-6 pt-6 lg:pt-0">
+              <h3 className="text-slate-400 text-xs font-bold mb-4">Status Update History</h3>
+              {loadingHistory ? (
+                <div className="flex flex-col items-center justify-center py-12 gap-2">
+                  <Loader className="w-6 h-6 text-primary-500 animate-spin" />
+                  <span className="text-slate-500 text-xs font-bold">Loading history logs...</span>
+                </div>
+              ) : orderHistory.length === 0 ? (
+                <div className="text-slate-500 text-xs font-bold py-12 text-center">
+                  No status updates recorded yet.
+                </div>
+              ) : (
+                <div className="relative border-l border-slate-800 pl-4 space-y-6 ml-2 py-2 flex-1 max-h-[350px] overflow-y-auto pr-2">
+                  {orderHistory.map((hist) => (
+                    <div key={hist.id} className="relative">
+                      {/* Timeline dot */}
+                      <div className="absolute -left-[21px] top-1.5 w-2.5 h-2.5 rounded-full bg-slate-950 border-2 border-primary-500"></div>
+                      
+                      <div>
+                        <span className={`inline-block px-2 py-0.5 rounded-full border text-[9px] font-bold ${statusBadges[hist.status]?.class}`}>
+                          {statusBadges[hist.status]?.label || hist.status}
+                        </span>
+                        <p className="text-xs text-slate-300 mt-1 font-medium">{hist.notes}</p>
+                        <span className="text-[9px] text-slate-500 font-bold block mt-0.5">
+                          {new Date(hist.created_at).toLocaleString('en-US', {
+                            day: 'numeric',
+                            month: 'short',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          })}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
